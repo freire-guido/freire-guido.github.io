@@ -29,7 +29,7 @@ author:
   location         : "Buenos Aires"
   employer         : "Universidad de Buenos Aires"
   uri              : # URL
-  # email            : "none@example.org" 
+  email            : # EMAIL
 
   # Academic websites
   academia         : # URL
