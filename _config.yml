@@ -25,11 +25,11 @@ author:
   avatar           : "profile.png"
   name             : "Guido Freire"
   pronouns         : # example: "she/her"  
-  bio              : "Short biography for the left-hand sidebar"
+  bio              : "Data Scientist. AI Researcher. Bioinformatics."
   location         : "Buenos Aires"
   employer         : "Universidad de Buenos Aires"
   uri              : # URL
-  email            : # EMAIL
+  email            : "none@example.org" 
 
   # Academic websites
   academia         : # URL
