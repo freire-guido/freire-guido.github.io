@@ -9,7 +9,7 @@
 # Basic Site Settings
 locale                   : "en-US"
 site_theme               : "default"
-title                    : "GF"
+title                    : "Guido Freire"
 title_separator          : "-"
 name                     : &name "Guido Freire"
 description              : &description "personal description"
@@ -25,7 +25,7 @@ author:
   avatar           : "profile.png"
   name             : "Guido Freire"
   pronouns         : # example: "she/her"  
-  bio              : "Data Scientist. AI Researcher. Bioinformatics"
+  bio              : "Data Scientist"
   location         : "Buenos Aires, Argentina"
   employer         : "Universidad de Buenos Aires"
   uri              : # URL
