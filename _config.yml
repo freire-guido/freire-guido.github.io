@@ -1,24 +1,27 @@
-title: Researcher
-url: "https://ankitsultana.com"
-baseurl: "/researcher"
+title: Guido Freire
+url: "https://freireguido.com"
+baseurl: "/"
 
 markdown: kramdown
+remote_theme: ankitsultana/researcher@gem
 #ins_logo: "./bits-logo.png"
 
 tracking_id: #
 
 footer: yes
 footer_url: "https://github.com/ankitsultana"
-footer_text: "Page design by Ankit Sultana"
+footer_text: "Website forked from this repo"
 
 sass:
     style: compressed
     sass_dir: _sass
 
 nav:
- - name: "About"
-   link: "/researcher/"
- - name: "Resume"
-   link: "resume.pdf"
- - name: "Contact"
-   link: "contact"
+ - name: "about"
+   link: "/"
+ - name: "research"
+   link: "/research"
+ - name: "blog"
+   link: "/blog"
+ - name: "cv"
+   link: "/cv.pdf"
