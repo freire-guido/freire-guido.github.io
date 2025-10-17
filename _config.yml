@@ -22,6 +22,6 @@ nav:
  - name: "research"
    link: "/research"
  - name: "blog"
-   link: "/blog"
+   link: "https://freireguido.substack.com"
  - name: "cv"
    link: "/cv.pdf"
