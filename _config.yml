@@ -25,3 +25,5 @@ nav:
    link: "https://freireguido.substack.com"
  - name: "cv"
    link: "/cv.pdf"
+ - name: "books"
+   link: "/books"
