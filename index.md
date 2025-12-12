@@ -16,7 +16,8 @@ In my copious free time, I moderate Wikipedia and contribute to reducing the eng
 
 # Select experience
 
-- AI Safety Research Fellow, Open Philanthropy - 2025
+- Research Fellow, Cambridge Artificial Intelligence Safety Hub (CAISH), MARS - 2025
+- Research Fellow, Artificial Intelligence Safety Argentina (AISAR), Open Philanthropy - 2025
 - Honor Diploma (MSc.), University of Buenos Aires - 2024
 - Certified Bartender, Gato Dumas - 2023
 - Student Volunteer @ XXI Latin Ibero-American Conference in Operations Research - 2022
