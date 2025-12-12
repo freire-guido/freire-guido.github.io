@@ -9,6 +9,7 @@ As physical books become artifacts of a time lost, I am maintaining a list of  b
 Order follows Left-to-Right, Up-to-Down order in my bedroom library. Manuals, Magazines, Photo-books omitted.
 
 Title, Author, Format, Acquisition Date
+- *Liberalism and its Discontents*, Francis Fukuyama, Softcover, December 2025
 - *Careless People*, Sarah Wynn-Williams, Hardcover, February 2025
 - *Andrew Carnegie*, David Nasaw, Softcover, 2024
 - *Surely You're Joking, Mr. Feynman*, Richard P. Feynman, Softcover, 2023
