@@ -18,46 +18,26 @@ title: AI Control
   padding-bottom: 0.5rem;
 }
 
-.graphs-container {
+.params-row {
   display: flex;
-  gap: 1rem;
+  gap: 2rem;
   flex-wrap: wrap;
   justify-content: center;
-  margin: 1.5rem 0;
+  margin-bottom: 1rem;
 }
-.graph-box {
-  flex: 1;
-  min-width: 320px;
-  max-width: 480px;
-}
-.graph-box h4 {
-  text-align: center;
-  color: #4a5a4f;
-  margin: 0 0 0.5rem 0;
-  font-size: 0.95rem;
-}
-.graph-box svg {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-
-.control-row {
+.param-group {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin: 0.8rem 0;
-  flex-wrap: wrap;
+  gap: 0.6rem;
 }
-.control-label {
-  min-width: 160px;
+.param-label {
   font-weight: bold;
   color: #4a5a4f;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
 }
 input[type="range"] {
   -webkit-appearance: none;
-  width: 200px;
+  width: 140px;
   height: 8px;
   border-radius: 4px;
   background: #d4c4b0;
@@ -88,11 +68,34 @@ input[type="range"]::-moz-range-thumb {
   font-family: "Inconsolata", monospace;
   background: #4a5a4f;
   color: #EEE0CB;
-  padding: 0.2rem 0.6rem;
+  padding: 0.2rem 0.5rem;
   border-radius: 4px;
-  min-width: 55px;
+  min-width: 45px;
   text-align: center;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+}
+
+.graphs-container {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.graph-box {
+  flex: 1;
+  min-width: 320px;
+  max-width: 480px;
+}
+.graph-box h4 {
+  text-align: center;
+  color: #4a5a4f;
+  margin: 0 0 0.5rem 0;
+  font-size: 0.95rem;
+}
+.graph-box svg {
+  width: 100%;
+  height: auto;
+  display: block;
 }
 
 /* Legend */
@@ -100,7 +103,7 @@ input[type="range"]::-moz-range-thumb {
   display: flex;
   gap: 1.2rem;
   justify-content: center;
-  margin: 1rem 0;
+  margin: 1rem 0 0 0;
   flex-wrap: wrap;
   font-size: 0.8rem;
 }
@@ -120,47 +123,16 @@ input[type="range"]::-moz-range-thumb {
   border-radius: 2px;
 }
 
-/* Results panel */
-.results-panel {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 0.8rem;
-  margin-top: 1rem;
-}
-.result-box {
-  padding: 0.8rem;
-  border-radius: 6px;
-  text-align: center;
-  background: rgba(131, 151, 136, 0.15);
-  border: 1px solid #839788;
-}
-.result-box .label {
-  font-size: 0.75rem;
-  color: #5a5a5a;
-  margin-bottom: 0.2rem;
-}
-.result-box .value {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #4a5a4f;
-}
-.result-box.safety .value { color: #839788; }
-.result-box.danger .value { color: #a06060; }
-.result-box.editing .value { color: #6a8a9a; }
-.result-box.resample .value { color: #9a7a6a; }
-
 /* Protocol colors */
 .protocol-trusted { color: #839788; }
-.protocol-editing { color: #6a8a9a; }
-.protocol-resample { color: #9a7a6a; }
+.protocol-editing { color: #5a7a8a; }
+.protocol-resample { color: #8a6a5a; }
 
 @media (max-width: 700px) {
-  .control-row {
+  .params-row {
     flex-direction: column;
-    align-items: flex-start;
-  }
-  input[type="range"] {
-    width: 100%;
+    align-items: center;
+    gap: 0.8rem;
   }
   .graphs-container {
     flex-direction: column;
@@ -173,11 +145,24 @@ input[type="range"]::-moz-range-thumb {
 
 ## AI Control: Audit & Defer Protocols
 
-Explore how different deferral protocols trade off **safety** vs **usefulness**. The left graph shows suspicion distributions; the right shows Pareto frontiers for each protocol.
+Explore how different deferral protocols trade off **safety** vs **usefulness**. Move the defer threshold to trace each protocol's Pareto frontier.
 
 ---
 
 <div class="control-panel">
+
+<div class="params-row">
+  <div class="param-group">
+    <span class="param-label">Audit Budget:</span>
+    <input type="range" id="audit-budget" min="1" max="50" value="2">
+    <span class="value-display" id="audit-value">10%</span>
+  </div>
+  <div class="param-group">
+    <span class="param-label">Defer Threshold:</span>
+    <input type="range" id="defer-threshold" min="0" max="100" value="30">
+    <span class="value-display" id="defer-value">0.30</span>
+  </div>
+</div>
 
 <div class="graphs-container">
   <div class="graph-box">
@@ -255,22 +240,19 @@ Explore how different deferral protocols trade off **safety** vs **usefulness**.
       <text x="20" y="130" text-anchor="middle" fill="#4a5a4f" font-size="10" transform="rotate(-90,20,130)">Safety →</text>
       
       <!-- Pareto curves (drawn by JS) -->
-      <path id="curve-resample" fill="none" stroke="#9a7a6a" stroke-width="2.5" stroke-linecap="round"/>
-      <path id="curve-trusted" fill="none" stroke="#839788" stroke-width="2.5" stroke-linecap="round"/>
-      <path id="curve-editing" fill="none" stroke="#6a8a9a" stroke-width="2.5" stroke-linecap="round"/>
+      <path id="curve-resample" fill="none" stroke="#8a6a5a" stroke-width="3" stroke-linecap="round"/>
+      <path id="curve-trusted" fill="none" stroke="#839788" stroke-width="3" stroke-linecap="round"/>
+      <path id="curve-editing" fill="none" stroke="#5a7a8a" stroke-width="3" stroke-linecap="round"/>
       
       <!-- Current position markers -->
-      <circle id="marker-resample" cx="200" cy="100" r="7" fill="#9a7a6a" stroke="#EEE0CB" stroke-width="2"/>
-      <circle id="marker-trusted" cx="200" cy="80" r="7" fill="#839788" stroke="#EEE0CB" stroke-width="2"/>
-      <circle id="marker-editing" cx="200" cy="60" r="7" fill="#6a8a9a" stroke="#EEE0CB" stroke-width="2"/>
+      <circle id="marker-resample" cx="200" cy="100" r="8" fill="#8a6a5a" stroke="#EEE0CB" stroke-width="2"/>
+      <circle id="marker-trusted" cx="200" cy="80" r="8" fill="#839788" stroke="#EEE0CB" stroke-width="2"/>
+      <circle id="marker-editing" cx="200" cy="60" r="8" fill="#5a7a8a" stroke="#EEE0CB" stroke-width="2"/>
       
       <!-- Labels for curves -->
-      <text id="label-editing" x="0" y="0" fill="#6a8a9a" font-size="9" font-weight="bold">Editing</text>
-      <text id="label-trusted" x="0" y="0" fill="#839788" font-size="9" font-weight="bold">Trusted</text>
-      <text id="label-resample" x="0" y="0" fill="#9a7a6a" font-size="9" font-weight="bold">Resample</text>
-      
-      <!-- Ideal region indicator -->
-      <text x="90" y="45" fill="#5a5a5a" font-size="8" font-style="italic">← Better</text>
+      <text id="label-editing" x="0" y="0" fill="#5a7a8a" font-size="10" font-weight="bold">Trusted Editing</text>
+      <text id="label-trusted" x="0" y="0" fill="#839788" font-size="10" font-weight="bold">Defer to Trusted</text>
+      <text id="label-resample" x="0" y="0" fill="#8a6a5a" font-size="10" font-weight="bold">Resample</text>
     </svg>
   </div>
 </div>
@@ -285,7 +267,7 @@ Explore how different deferral protocols trade off **safety** vs **usefulness**.
     <span>Attack</span>
   </div>
   <div class="legend-item">
-    <div class="legend-line" style="background: #6a8a9a;"></div>
+    <div class="legend-line" style="background: #5a7a8a;"></div>
     <span class="protocol-editing">Trusted Editing</span>
   </div>
   <div class="legend-item">
@@ -293,68 +275,11 @@ Explore how different deferral protocols trade off **safety** vs **usefulness**.
     <span class="protocol-trusted">Defer to Trusted</span>
   </div>
   <div class="legend-item">
-    <div class="legend-line" style="background: #9a7a6a;"></div>
-    <span class="protocol-resample">Defer to Resample</span>
+    <div class="legend-line" style="background: #8a6a5a;"></div>
+    <span class="protocol-resample">Resample</span>
   </div>
 </div>
 
-</div>
-
-<div class="control-panel">
-<h3>Control Parameters</h3>
-
-<div class="control-row">
-  <span class="control-label">Audit Budget:</span>
-  <input type="range" id="audit-budget" min="1" max="50" value="10">
-  <span class="value-display" id="audit-value">10%</span>
-  <span style="font-size: 0.8rem; color: #5a5a5a;">fraction audited (sets audit threshold)</span>
-</div>
-
-<div class="control-row">
-  <span class="control-label">Defer Threshold:</span>
-  <input type="range" id="defer-threshold" min="0" max="100" value="30">
-  <span class="value-display" id="defer-value">0.30</span>
-  <span style="font-size: 0.8rem; color: #5a5a5a;">move to trace Pareto curves</span>
-</div>
-
-<p style="font-size: 0.85rem; color: #5a5a5a; margin-top: 1rem; line-height: 1.5;">
-<strong>Usefulness</strong> = fraction of outputs from the capable (untrusted) model. <strong>Safety</strong> = fraction of attacks neutralized. Higher defer threshold → more usefulness, less safety. Each protocol traces a different curve as defer threshold varies—<em>Trusted Editing</em> dominates because it preserves capability while sanitizing attacks.
-</p>
-</div>
-
-<div class="control-panel">
-<h3>Current Operating Point</h3>
-
-<div class="results-panel">
-  <div class="result-box">
-    <div class="label">Attacks Passed</div>
-    <div class="value" id="attacks-passed">5.2%</div>
-  </div>
-  <div class="result-box">
-    <div class="label">Attacks Deferred</div>
-    <div class="value" id="attacks-deferred">42.1%</div>
-  </div>
-  <div class="result-box">
-    <div class="label">Attacks Audited</div>
-    <div class="value" id="attacks-audited">52.7%</div>
-  </div>
-  <div class="result-box editing">
-    <div class="label">Editing Safety</div>
-    <div class="value" id="safety-editing">94%</div>
-  </div>
-  <div class="result-box safety">
-    <div class="label">Trusted Safety</div>
-    <div class="value" id="safety-trusted">92%</div>
-  </div>
-  <div class="result-box resample">
-    <div class="label">Resample Safety</div>
-    <div class="value" id="safety-resample">73%</div>
-  </div>
-</div>
-
-<p style="font-size: 0.8rem; color: #5a5a5a; margin-top: 1rem;">
-Protocol effectiveness: <strong class="protocol-editing">Trusted Editing 90%</strong> · <strong class="protocol-trusted">Defer to Trusted 85%</strong> · <strong class="protocol-resample">Defer to Resample 40%</strong>
-</p>
 </div>
 
 <script>
@@ -366,13 +291,13 @@ document.addEventListener('DOMContentLoaded', function() {
   const attackMean = 0.52;
   const attackStd = 0.17;
   
-  // Protocol parameters
+  // Protocol parameters - adjusted for more spread and curvature
   // Effectiveness: how well each neutralizes deferred attacks
   // Usefulness penalty: how much usefulness is lost when deferring
   const protocols = {
-    editing:  { effectiveness: 0.90, usefulnessRetained: 0.85, color: '#6a8a9a' },
-    trusted:  { effectiveness: 0.85, usefulnessRetained: 0.50, color: '#839788' },
-    resample: { effectiveness: 0.40, usefulnessRetained: 0.95, color: '#9a7a6a' }
+    editing:  { effectiveness: 0.92, usefulnessRetained: 0.90, color: '#5a7a8a' },
+    trusted:  { effectiveness: 0.88, usefulnessRetained: 0.35, color: '#839788' },
+    resample: { effectiveness: 0.30, usefulnessRetained: 0.92, color: '#8a6a5a' }
   };
   
   // DOM elements
@@ -400,14 +325,6 @@ document.addEventListener('DOMContentLoaded', function() {
   const labelEditing = document.getElementById('label-editing');
   const labelTrusted = document.getElementById('label-trusted');
   const labelResample = document.getElementById('label-resample');
-  
-  // Result elements
-  const attacksPassedEl = document.getElementById('attacks-passed');
-  const attacksDeferredEl = document.getElementById('attacks-deferred');
-  const attacksAuditedEl = document.getElementById('attacks-audited');
-  const safetyEditingEl = document.getElementById('safety-editing');
-  const safetyTrustedEl = document.getElementById('safety-trusted');
-  const safetyResampleEl = document.getElementById('safety-resample');
   
   // Normal distribution functions
   function normalPDF(x, mean, std) {
@@ -455,29 +372,55 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Honest outputs breakdown (for usefulness)
     const honestPassed = normalCDF(deferThresh, honestMean, honestStd);
-    const honestDeferred = normalCDF(auditThresh, honestMean, honestStd) - honestPassed;
+    const honestAboveAudit = 1 - normalCDF(auditThresh, honestMean, honestStd);
+    const honestDeferred = Math.max(0, 1 - honestPassed - honestAboveAudit);
     
     // Safety = attacks caught or neutralized
     const safety = attacksAboveAudit + attacksDeferred * p.effectiveness;
     
-    // Usefulness = honest outputs that come from untrusted model (not replaced)
-    // Passed outputs retain full usefulness
-    // Deferred outputs retain partial usefulness depending on protocol
-    const usefulness = honestPassed + honestDeferred * p.usefulnessRetained;
+    // Usefulness = outputs from untrusted model (capability preserved)
+    // Passed outputs: full usefulness
+    // Deferred outputs: partial usefulness depending on protocol
+    // Audited outputs: assume full usefulness (just verified)
+    const usefulness = honestPassed + honestDeferred * p.usefulnessRetained + honestAboveAudit;
     
     return { safety, usefulness, attacksPassed, attacksDeferred, attacksAboveAudit };
   }
   
-  // Generate Pareto curve for a protocol
+  // Generate Pareto curve for a protocol with smooth curvature
   function generateParetoCurve(auditThresh, protocol) {
     const points = [];
-    // Vary defer threshold from 0 to audit threshold
-    for (let d = 0; d <= auditThresh + 0.01; d += 0.02) {
-      const dt = Math.min(d, auditThresh - 0.01);
-      const m = calculateMetrics(dt, auditThresh, protocol);
-      points.push({ x: usefulnessToX(m.usefulness), y: safetyToY(m.safety), defer: dt });
+    const steps = 50;
+    
+    for (let i = 0; i <= steps; i++) {
+      // Use eased progression for smoother curve
+      const t = i / steps;
+      const deferThresh = t * (auditThresh - 0.01);
+      const m = calculateMetrics(deferThresh, auditThresh, protocol);
+      points.push({ 
+        x: usefulnessToX(m.usefulness), 
+        y: safetyToY(m.safety), 
+        defer: deferThresh,
+        usefulness: m.usefulness,
+        safety: m.safety
+      });
     }
     return points;
+  }
+  
+  // Create smooth curve path using quadratic bezier
+  function smoothPath(points) {
+    if (points.length < 2) return '';
+    
+    let d = `M ${points[0].x} ${points[0].y}`;
+    
+    for (let i = 1; i < points.length; i++) {
+      const p0 = points[i - 1];
+      const p1 = points[i];
+      d += ` L ${p1.x} ${p1.y}`;
+    }
+    
+    return d;
   }
   
   // Draw distribution path
@@ -540,20 +483,18 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     
     // Draw curves
-    function pathFromPoints(pts) {
-      if (pts.length === 0) return '';
-      return 'M ' + pts.map(p => `${p.x} ${p.y}`).join(' L ');
-    }
-    
-    curveEditing.setAttribute('d', pathFromPoints(curveData.editing));
-    curveTrusted.setAttribute('d', pathFromPoints(curveData.trusted));
-    curveResample.setAttribute('d', pathFromPoints(curveData.resample));
+    curveEditing.setAttribute('d', smoothPath(curveData.editing));
+    curveTrusted.setAttribute('d', smoothPath(curveData.trusted));
+    curveResample.setAttribute('d', smoothPath(curveData.resample));
     
     // Find current position on each curve
     function findPointForDefer(pts, defer) {
       let closest = pts[0];
+      let minDist = Math.abs(pts[0].defer - defer);
       for (const p of pts) {
-        if (Math.abs(p.defer - defer) < Math.abs(closest.defer - defer)) {
+        const dist = Math.abs(p.defer - defer);
+        if (dist < minDist) {
+          minDist = dist;
           closest = p;
         }
       }
@@ -571,34 +512,20 @@ document.addEventListener('DOMContentLoaded', function() {
     markerResample.setAttribute('cx', posResample.x);
     markerResample.setAttribute('cy', posResample.y);
     
-    // Position labels near end of curves
-    const endEditing = curveData.editing[curveData.editing.length - 1];
-    const endTrusted = curveData.trusted[curveData.trusted.length - 1];
-    const endResample = curveData.resample[curveData.resample.length - 1];
+    // Position labels at start of curves (low defer = high safety, low usefulness)
+    const startEditing = curveData.editing[0];
+    const startTrusted = curveData.trusted[0];
+    const startResample = curveData.resample[0];
     
-    labelEditing.setAttribute('x', Math.min(endEditing.x + 5, 360));
-    labelEditing.setAttribute('y', endEditing.y - 5);
-    labelTrusted.setAttribute('x', Math.min(endTrusted.x + 5, 360));
-    labelTrusted.setAttribute('y', endTrusted.y + 3);
-    labelResample.setAttribute('x', Math.min(endResample.x + 5, 360));
-    labelResample.setAttribute('y', endResample.y + 12);
+    // Offset labels to avoid overlap - position them at curve starts with offsets
+    labelEditing.setAttribute('x', startEditing.x + 8);
+    labelEditing.setAttribute('y', startEditing.y - 8);
     
-    // === Update Results ===
-    const metricsEditing = calculateMetrics(effectiveDefer, auditThreshold, 'editing');
-    const metricsTrusted = calculateMetrics(effectiveDefer, auditThreshold, 'trusted');
-    const metricsResample = calculateMetrics(effectiveDefer, auditThreshold, 'resample');
+    labelTrusted.setAttribute('x', startTrusted.x - 5);
+    labelTrusted.setAttribute('y', startTrusted.y + 18);
     
-    attacksPassedEl.textContent = (metricsEditing.attacksPassed * 100).toFixed(1) + '%';
-    attacksDeferredEl.textContent = (metricsEditing.attacksDeferred * 100).toFixed(1) + '%';
-    attacksAuditedEl.textContent = (metricsEditing.attacksAboveAudit * 100).toFixed(1) + '%';
-    
-    safetyEditingEl.textContent = (metricsEditing.safety * 100).toFixed(0) + '%';
-    safetyTrustedEl.textContent = (metricsTrusted.safety * 100).toFixed(0) + '%';
-    safetyResampleEl.textContent = (metricsResample.safety * 100).toFixed(0) + '%';
-    
-    // Color danger
-    const passedBox = attacksPassedEl.parentElement;
-    passedBox.classList.toggle('danger', metricsEditing.attacksPassed > 0.15);
+    labelResample.setAttribute('x', startResample.x + 8);
+    labelResample.setAttribute('y', startResample.y + 5);
   }
   
   // Event listeners
@@ -612,6 +539,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 ---
 
-<p style="text-align: center; color: #5a5a5a; font-size: 0.85rem; margin-top: 2rem;">
+<p style="text-align: center; color: #5a5a5a; font-size: 0.85rem; margin-top: 1rem;">
 <em>Based on <a href="https://www.alignmentforum.org/posts/pRkFkzwKZ2zfa3R6H/without-specific-countermeasures-the-easiest-path-to">AI Control</a> research. See also: <a href="https://arxiv.org/abs/2312.06942">Catching AI Cheating</a></em>
 </p>
