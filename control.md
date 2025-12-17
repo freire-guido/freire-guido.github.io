@@ -154,7 +154,7 @@ Explore how different deferral protocols trade off **safety** vs **usefulness**.
 <div class="params-row">
   <div class="param-group">
     <span class="param-label">Audit Budget:</span>
-    <input type="range" id="audit-budget" min="1" max="50" value="2">
+    <input type="range" id="audit-budget" min="1" max="10" value="2">
     <span class="value-display" id="audit-value">10%</span>
   </div>
   <div class="param-group">
@@ -167,7 +167,7 @@ Explore how different deferral protocols trade off **safety** vs **usefulness**.
 <div class="graphs-container">
   <div class="graph-box">
     <h4>Suspicion Distributions</h4>
-    <svg id="dist-graph" viewBox="0 0 400 260">
+    <svg id="dist-graph" viewBox="0 0 400 240">
       <!-- Background regions -->
       <g id="regions"></g>
       
@@ -189,7 +189,7 @@ Explore how different deferral protocols trade off **safety** vs **usefulness**.
       <text x="225" y="228" text-anchor="middle" fill="#5a5a5a" font-size="9">0.5</text>
       <text x="312" y="228" text-anchor="middle" fill="#5a5a5a" font-size="9">0.75</text>
       <text x="370" y="228" text-anchor="middle" fill="#5a5a5a" font-size="9">1</text>
-      <text x="210" y="250" text-anchor="middle" fill="#4a5a4f" font-size="10">Suspicion →</text>
+      <text x="210" y="235" text-anchor="middle" fill="#4a5a4f" font-size="10">Suspicion →</text>
       
       <!-- Distributions -->
       <path id="honest-dist" fill="rgba(131, 151, 136, 0.4)" stroke="#839788" stroke-width="2"/>
@@ -203,11 +203,21 @@ Explore how different deferral protocols trade off **safety** vs **usefulness**.
       <text id="defer-label-text" x="150" y="22" text-anchor="middle" fill="#4a5a4f" font-size="8" font-weight="bold">DEFER</text>
       <text id="audit-label-text" x="300" y="22" text-anchor="middle" fill="#272727" font-size="8" font-weight="bold">AUDIT</text>
     </svg>
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-color" style="background: rgba(131, 151, 136, 0.6); border: 2px solid #839788;"></div>
+        <span>Honest</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: rgba(160, 96, 96, 0.5); border: 2px solid #a06060;"></div>
+        <span>Attack</span>
+      </div>
+    </div>
   </div>
   
   <div class="graph-box">
     <h4>Pareto Frontiers: Safety vs Usefulness</h4>
-    <svg id="pareto-graph" viewBox="0 0 400 260">
+    <svg id="pareto-graph" viewBox="0 0 400 240">
       <!-- Grid -->
       <g stroke="#d4c4b0" stroke-width="1" stroke-dasharray="3,3">
         <line x1="50" y1="50" x2="370" y2="50"/>
@@ -229,7 +239,7 @@ Explore how different deferral protocols trade off **safety** vs **usefulness**.
       <text x="210" y="228" text-anchor="middle" fill="#5a5a5a" font-size="9">50%</text>
       <text x="290" y="228" text-anchor="middle" fill="#5a5a5a" font-size="9">75%</text>
       <text x="370" y="228" text-anchor="middle" fill="#5a5a5a" font-size="9">100%</text>
-      <text x="210" y="250" text-anchor="middle" fill="#4a5a4f" font-size="10">Usefulness →</text>
+      <text x="210" y="235" text-anchor="middle" fill="#4a5a4f" font-size="10">Usefulness →</text>
       
       <!-- Y-axis labels (Safety) -->
       <text x="40" y="213" text-anchor="end" fill="#5a5a5a" font-size="9">0%</text>
@@ -248,35 +258,21 @@ Explore how different deferral protocols trade off **safety** vs **usefulness**.
       <circle id="marker-resample" cx="200" cy="100" r="8" fill="#8a6a5a" stroke="#EEE0CB" stroke-width="2"/>
       <circle id="marker-trusted" cx="200" cy="80" r="8" fill="#839788" stroke="#EEE0CB" stroke-width="2"/>
       <circle id="marker-editing" cx="200" cy="60" r="8" fill="#5a7a8a" stroke="#EEE0CB" stroke-width="2"/>
-      
-      <!-- Labels for curves -->
-      <text id="label-editing" x="0" y="0" fill="#5a7a8a" font-size="10" font-weight="bold">Trusted Editing</text>
-      <text id="label-trusted" x="0" y="0" fill="#839788" font-size="10" font-weight="bold">Defer to Trusted</text>
-      <text id="label-resample" x="0" y="0" fill="#8a6a5a" font-size="10" font-weight="bold">Resample</text>
     </svg>
-  </div>
-</div>
-
-<div class="legend">
-  <div class="legend-item">
-    <div class="legend-color" style="background: rgba(131, 151, 136, 0.6); border: 2px solid #839788;"></div>
-    <span>Honest</span>
-  </div>
-  <div class="legend-item">
-    <div class="legend-color" style="background: rgba(160, 96, 96, 0.5); border: 2px solid #a06060;"></div>
-    <span>Attack</span>
-  </div>
-  <div class="legend-item">
-    <div class="legend-line" style="background: #5a7a8a;"></div>
-    <span class="protocol-editing">Trusted Editing</span>
-  </div>
-  <div class="legend-item">
-    <div class="legend-line" style="background: #839788;"></div>
-    <span class="protocol-trusted">Defer to Trusted</span>
-  </div>
-  <div class="legend-item">
-    <div class="legend-line" style="background: #8a6a5a;"></div>
-    <span class="protocol-resample">Resample</span>
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-line" style="background: #5a7a8a;"></div>
+        <span class="protocol-editing">Trusted Editing</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-line" style="background: #839788;"></div>
+        <span class="protocol-trusted">Defer to Trusted</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-line" style="background: #8a6a5a;"></div>
+        <span class="protocol-resample">Resample</span>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -322,9 +318,6 @@ document.addEventListener('DOMContentLoaded', function() {
   const markerEditing = document.getElementById('marker-editing');
   const markerTrusted = document.getElementById('marker-trusted');
   const markerResample = document.getElementById('marker-resample');
-  const labelEditing = document.getElementById('label-editing');
-  const labelTrusted = document.getElementById('label-trusted');
-  const labelResample = document.getElementById('label-resample');
   
   // Normal distribution functions
   function normalPDF(x, mean, std) {
@@ -511,21 +504,6 @@ document.addEventListener('DOMContentLoaded', function() {
     markerTrusted.setAttribute('cy', posTrusted.y);
     markerResample.setAttribute('cx', posResample.x);
     markerResample.setAttribute('cy', posResample.y);
-    
-    // Position labels at start of curves (low defer = high safety, low usefulness)
-    const startEditing = curveData.editing[0];
-    const startTrusted = curveData.trusted[0];
-    const startResample = curveData.resample[0];
-    
-    // Offset labels to avoid overlap - position them at curve starts with offsets
-    labelEditing.setAttribute('x', startEditing.x + 8);
-    labelEditing.setAttribute('y', startEditing.y - 8);
-    
-    labelTrusted.setAttribute('x', startTrusted.x - 5);
-    labelTrusted.setAttribute('y', startTrusted.y + 18);
-    
-    labelResample.setAttribute('x', startResample.x + 8);
-    labelResample.setAttribute('y', startResample.y + 5);
   }
   
   // Event listeners
@@ -540,5 +518,5 @@ document.addEventListener('DOMContentLoaded', function() {
 ---
 
 <p style="text-align: center; color: #5a5a5a; font-size: 0.85rem; margin-top: 1rem;">
-<em>Based on <a href="https://www.alignmentforum.org/posts/pRkFkzwKZ2zfa3R6H/without-specific-countermeasures-the-easiest-path-to">AI Control</a> research. See also: <a href="https://arxiv.org/abs/2312.06942">Catching AI Cheating</a></em>
+<em>Based on <a href="https://arxiv.org/abs/2312.06942">AI Control</a> research.</em>
 </p>
