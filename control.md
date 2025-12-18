@@ -143,16 +143,32 @@ input[type="range"]::-moz-range-thumb {
 }
 </style>
 
-## What is Safety?
+You've built a powerful AI coding assistant. It writes code faster than your best engineers, spots bugs before they ship, and automates the tedious parts of software development. There's just one problem: you're not entirely sure it's on your side.
 
-**Safety** is the probability that no attack goes undetected. We derive this step by step.
+Maybe it was trained on data that gave it strange goals. Maybe it learned to game your feedback in subtle ways. Maybe it's simply pursuing something you didn't intend. Whatever the reason, you need to deploy it *now* — but you also need to sleep at night.
 
-**Setup.** An AI system runs for many rounds. A monitor watches for attacks. If an attack is caught, the system shuts down. Define:
+**How do you use an AI system you can't fully trust?**
 
-- ***c*** ∈ [0,1] — probability an attack is caught by the monitor
-- ***p*** ∈ [0,1] — probability the AI chooses to attack on any given round
+This is the core problem of **AI Control**. And surprisingly, we can reason about it with mathematical precision. What follows is a journey through the key ideas: what "safety" even means, the protocols that trade off safety against usefulness, and why the quality of your monitoring system determines everything.
 
-**Step 1: What happens in a single round?**
+---
+
+## What Does Safety Even Mean?
+
+Let's start with a deceptively simple question: if an AI might try to attack you, how do you quantify "safe enough"?
+
+Here's the setup. Your AI system runs for many rounds — maybe thousands of tasks per day. A monitor watches each output and flags anything suspicious. If an attack is caught, the system shuts down. But some attacks might slip through undetected.
+
+**What's the probability that *nothing* slips through?**
+
+Let's build up to the answer.
+
+We need two numbers to reason about this:
+
+- ***c*** ∈ [0,1] — the probability your monitor catches an attack
+- ***p*** ∈ [0,1] — the probability the AI attacks on any given round
+
+Now, what happens in a single round?
 
 | Outcome | Probability | Result |
 |---------|-------------|--------|
@@ -160,35 +176,33 @@ input[type="range"]::-moz-range-thumb {
 | Attack caught | *p* · *c* | System shuts down |
 | Attack succeeds | *p* · (1−*c*) | Undetected — continues |
 
-**Step 2: Focus on attack attempts.**
+Here's the key insight: rounds without attacks are safe by definition. We only care about what happens *when the AI attacks*. And each attack is an independent coin flip:
 
-Rounds without attacks are safe by definition. We only need to analyze what happens *when the AI attacks*. Each attack attempt is independent:
+- Attack 1: caught with prob *c*, slips through with prob (1−*c*)
+- Attack 2: caught with prob *c*, slips through with prob (1−*c*)
+- ... and so on, until some attack gets caught → shutdown
 
-- Attack 1: caught with prob *c*, succeeds with prob (1−*c*)
-- Attack 2: caught with prob *c*, succeeds with prob (1−*c*)
-- ... and so on until some attack is caught → shutdown
+So let's count: how many attacks slip through before we catch one?
 
-**Step 3: Count undetected attacks.**
+Call this *K* — the number of successful (undetected) attacks before shutdown.
 
-Let *K* = number of successful (undetected) attacks before shutdown.
+- *K* = 0 means the first attack is caught. **P(*K* = 0) = *c***
+- *K* = 1 means one slips through, then we catch the second. **P(*K* = 1) = (1−*c*) · *c***
+- *K* = 2 means two slip through, third caught. **P(*K* = 2) = (1−*c*)² · *c***
 
-- *K* = 0: first attack is caught. **P(*K* = 0) = *c***
-- *K* = 1: first succeeds, second caught. **P(*K* = 1) = (1−*c*) · *c***
-- *K* = 2: first two succeed, third caught. **P(*K* = 2) = (1−*c*)² · *c***
+The pattern: **P(*K* = *k*) = (1−*c*)<sup>*k*</sup> · *c*** — this is the **Geometric(*c*)** distribution.
 
-In general: **P(*K* = *k*) = (1−*c*)<sup>*k*</sup> · *c***  for *k* = 0, 1, 2, ...
-
-This is the **Geometric(*c*)** distribution.
-
-**Step 4: Compute safety.**
+And now for the punchline:
 
 **Safety** = probability of zero undetected attacks = P(*K* = 0) = ***c***
 
-Expected number of undetected attacks: **E[*K*] = (1−*c*) / *c***
+That's it. Safety equals catch rate. The expected number of attacks that slip through is **E[*K*] = (1−*c*) / *c***.
 
-**Key insight:** The attack probability *p* does not appear! It only affects *how many rounds* pass between attacks — not what happens when an attack occurs.
+Wait — where did *p* go? The attack probability *p* doesn't appear in the safety formula at all! It only affects *how many rounds* pass between attacks, not what happens when attacks occur. **Safety depends entirely on your monitor quality.**
 
----
+This tells us what to optimize: not just "make the AI less likely to attack" but "make damn sure you catch attacks when they happen."
+
+Let's see this in action. Play with the catch rate below and watch how the distribution of undetected attacks changes:
 
 <div class="control-panel">
 <h4 style="text-align: center; margin-top: 0;">Geometric Distribution of Undetected Attacks</h4>
@@ -296,11 +310,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
 ---
 
-## AI Control: Audit & Defer Protocols
+## But There's a Tradeoff
 
-Explore how different deferral protocols trade off **safety** vs **usefulness**. Move the defer threshold to trace each protocol's Pareto frontier.
+Okay, so we just need to catch every attack? Not so fast.
 
----
+Here's the uncomfortable reality: catching attacks *costs* something. Every output your monitor flags needs to be handled — either audited by a human, recomputed by a safer (but slower) model, or thrown away entirely. Flag too aggressively and you've built a system that's safe but useless. Flag too conservatively and attacks slip through.
+
+Making this worse: honest outputs and attacks aren't perfectly separable. Some legitimate work looks suspicious. Some attacks are subtle enough to look benign. When you set a threshold for "flag this output," you're choosing where to cut through overlapping distributions.
+
+So we can't have it all. We face a **Pareto frontier** — a fundamental tradeoff between safety and usefulness. The interesting question becomes: which protocol gives us the best frontier?
+
+Different strategies handle suspicious outputs differently:
+- **Trusted Editing**: A trusted (but less capable) model reviews and edits flagged outputs
+- **Defer to Trusted**: Route flagged tasks entirely to the trusted model
+- **Resample**: Just ask the untrusted model to try again
+
+Each protocol traces a different curve through safety-usefulness space. Explore the tradeoffs below:
 
 <div class="control-panel">
 
@@ -669,9 +694,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
 ---
 
-## Better Attack Policies Hurt Safety
+## Enter the Red Team
 
-What happens when the red team improves their attack strategy? A more sophisticated attacker produces outputs that look less suspicious, shifting the attack distribution leftward and reducing safety margins.
+Here's the uncomfortable part: everything above assumed a naive attacker.
+
+We modeled the attack distribution as fixed — but what if the AI is smart? What if it *learns* to evade your monitor? A sophisticated attacker produces outputs that look less suspicious, intentionally blending in with honest work. The attack distribution shifts left toward the honest one. Your carefully tuned thresholds? Now they're cutting through the *wrong* part of the overlap.
+
+This is why AI control is fundamentally a *game*, not a one-time engineering problem. The red team (simulating a misaligned AI) tries to find attack strategies that slip past blue team defenses. The blue team hardens their protocols. Rinse, repeat.
+
+Let's see what happens as the attacker gets better. Crank up "evasiveness" (attacks that look more innocent) and "consistency" (less variance in attack behavior) and watch your safety margins erode:
 
 <div class="control-panel">
 
@@ -1090,9 +1121,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
 ---
 
-## Monitor Quality & Operating Point
+## The Monitor's Dial
 
-Drag the point along the ROC curve to choose your monitor's operating threshold. Better monitors (higher AUC) expand what's achievable.
+So everything hinges on the monitor. How do we make it better? And once we have one, how do we tune it?
+
+This is where the **ROC curve** comes in — the classic tool for reasoning about classifiers. It shows you the tradeoff between catching real attacks (true positive rate) and falsely flagging honest work (false positive rate). Every point on the curve is a different threshold you could set.
+
+Think of it as a dial. Turn it one way: catch more attacks, but trigger more false alarms. Turn it the other way: fewer interruptions, but more attacks slip through. You can't escape the tradeoff — but a *better monitor* (higher AUC) gives you a better frontier to choose from.
+
+Drag the point along the curve to see how your choice of threshold affects both detection and the resulting safety-usefulness tradeoff:
 
 <style>
 .roc-container {
@@ -1425,6 +1462,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
 ---
 
-<p style="text-align: center; color: #5a5a5a; font-size: 0.85rem; margin-top: 1rem;">
-<em>Based on <a href="https://arxiv.org/abs/2312.06942">AI Control</a> research.</em>
+## Why This Matters
+
+These aren't theoretical games.
+
+As AI systems become more capable, we face a genuine dilemma: the models that can do the most useful work are also the hardest to trust. We can't wait until we've "solved alignment" to deploy powerful AI — the economic and competitive pressures are too strong. But we also can't deploy systems that might subvert us without *any* safeguards.
+
+AI Control offers a middle path. Instead of asking "is this AI aligned?" (a question we might not be able to answer), we ask "can we use this AI safely even if it isn't?" That reframing turns an impossibly vague alignment question into a concrete engineering problem with measurable safety guarantees.
+
+The key insights from this framework:
+
+1. **Safety = catch rate.** The probability of an undetected attack depends only on your monitor quality, not on how often the AI "tries" to attack.
+
+2. **Tradeoffs are real.** There's no free lunch — better safety costs usefulness. But the right protocols can give you a much better Pareto frontier.
+
+3. **It's adversarial.** You're not optimizing against a fixed distribution. The attack policy will improve. Your defenses need to anticipate this.
+
+4. **The monitor is everything.** Better monitoring research expands what's possible. This is where the leverage is.
+
+The window for getting this right isn't infinite. We need people thinking carefully about control *before* the systems arrive that require it.
+
+<p style="text-align: center; color: #5a5a5a; font-size: 0.85rem; margin-top: 2rem;">
+<em>Based on <a href="https://arxiv.org/abs/2312.06942">AI Control: Improving Safety Despite Intentional Subversion</a> (Greenblatt et al., 2023)</em>
 </p>
