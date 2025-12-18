@@ -143,6 +143,159 @@ input[type="range"]::-moz-range-thumb {
 }
 </style>
 
+## What is Safety?
+
+**Safety** is the probability that no attack goes undetected. We derive this step by step.
+
+**Setup.** An AI system runs for many rounds. A monitor watches for attacks. If an attack is caught, the system shuts down. Define:
+
+- ***c*** ∈ [0,1] — probability an attack is caught by the monitor
+- ***p*** ∈ [0,1] — probability the AI chooses to attack on any given round
+
+**Step 1: What happens in a single round?**
+
+| Outcome | Probability | Result |
+|---------|-------------|--------|
+| No attack | 1 − *p* | System continues |
+| Attack caught | *p* · *c* | System shuts down |
+| Attack succeeds | *p* · (1−*c*) | Undetected — continues |
+
+**Step 2: Focus on attack attempts.**
+
+Rounds without attacks are safe by definition. We only need to analyze what happens *when the AI attacks*. Each attack attempt is independent:
+
+- Attack 1: caught with prob *c*, succeeds with prob (1−*c*)
+- Attack 2: caught with prob *c*, succeeds with prob (1−*c*)
+- ... and so on until some attack is caught → shutdown
+
+**Step 3: Count undetected attacks.**
+
+Let *K* = number of successful (undetected) attacks before shutdown.
+
+- *K* = 0: first attack is caught. **P(*K* = 0) = *c***
+- *K* = 1: first succeeds, second caught. **P(*K* = 1) = (1−*c*) · *c***
+- *K* = 2: first two succeed, third caught. **P(*K* = 2) = (1−*c*)² · *c***
+
+In general: **P(*K* = *k*) = (1−*c*)<sup>*k*</sup> · *c***  for *k* = 0, 1, 2, ...
+
+This is the **Geometric(*c*)** distribution.
+
+**Step 4: Compute safety.**
+
+**Safety** = probability of zero undetected attacks = P(*K* = 0) = ***c***
+
+Expected number of undetected attacks: **E[*K*] = (1−*c*) / *c***
+
+**Key insight:** The attack probability *p* does not appear! It only affects *how many rounds* pass between attacks — not what happens when an attack occurs.
+
+---
+
+<div class="control-panel">
+<h4 style="text-align: center; margin-top: 0;">Geometric Distribution of Undetected Attacks</h4>
+
+<div class="params-row">
+  <div class="param-group">
+    <span class="param-label">Catch Rate <em>c</em>:</span>
+    <input type="range" id="safety-catch-rate" min="1" max="99" value="80">
+    <span class="value-display" id="safety-catch-value">0.80</span>
+  </div>
+</div>
+
+<svg id="geometric-graph" viewBox="0 0 500 240" style="width: 100%; max-width: 500px; display: block; margin: 0 auto;">
+  <!-- Grid -->
+  <g stroke="#d4c4b0" stroke-width="1" stroke-dasharray="3,3">
+    <line x1="60" y1="40" x2="480" y2="40"/>
+    <line x1="60" y1="90" x2="480" y2="90"/>
+    <line x1="60" y1="140" x2="480" y2="140"/>
+  </g>
+  
+  <!-- Axes -->
+  <line x1="60" y1="190" x2="480" y2="190" stroke="#4a5a4f" stroke-width="2"/>
+  <line x1="60" y1="190" x2="60" y2="20" stroke="#4a5a4f" stroke-width="2"/>
+  
+  <!-- X-axis labels -->
+  <text x="90" y="208" text-anchor="middle" fill="#5a5a5a" font-size="11">0</text>
+  <text x="150" y="208" text-anchor="middle" fill="#5a5a5a" font-size="11">1</text>
+  <text x="210" y="208" text-anchor="middle" fill="#5a5a5a" font-size="11">2</text>
+  <text x="270" y="208" text-anchor="middle" fill="#5a5a5a" font-size="11">3</text>
+  <text x="330" y="208" text-anchor="middle" fill="#5a5a5a" font-size="11">4</text>
+  <text x="390" y="208" text-anchor="middle" fill="#5a5a5a" font-size="11">5</text>
+  <text x="450" y="208" text-anchor="middle" fill="#5a5a5a" font-size="11">6+</text>
+  <text x="270" y="232" text-anchor="middle" fill="#4a5a4f" font-size="12">K = undetected attacks before shutdown</text>
+  
+  <!-- Y-axis labels -->
+  <text x="52" y="193" text-anchor="end" fill="#5a5a5a" font-size="10">0</text>
+  <text x="52" y="93" text-anchor="end" fill="#5a5a5a" font-size="10">0.5</text>
+  <text x="52" y="43" text-anchor="end" fill="#5a5a5a" font-size="10">1.0</text>
+  <text x="25" y="115" text-anchor="middle" fill="#4a5a4f" font-size="11" transform="rotate(-90,25,115)">P(K = k)</text>
+  
+  <!-- Bars -->
+  <g id="prob-bars"></g>
+</svg>
+
+<div style="display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; margin-top: 1rem;">
+  <div style="text-align: center;">
+    <div style="font-size: 0.8rem; color: #666;">Safety = P(K=0)</div>
+    <div style="font-family: 'Inconsolata', monospace; font-size: 1.8rem; font-weight: bold; color: #839788;" id="safety-result">80%</div>
+  </div>
+  <div style="text-align: center;">
+    <div style="font-size: 0.8rem; color: #666;">E[K] = expected undetected</div>
+    <div style="font-family: 'Inconsolata', monospace; font-size: 1.8rem; font-weight: bold; color: #a06060;" id="expected-uncaught">0.25</div>
+  </div>
+</div>
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const catchSlider = document.getElementById('safety-catch-rate');
+  const catchValueEl = document.getElementById('safety-catch-value');
+  const probBarsG = document.getElementById('prob-bars');
+  const safetyResultEl = document.getElementById('safety-result');
+  const expectedUncaughtEl = document.getElementById('expected-uncaught');
+  
+  function geometricPMF(k, c) {
+    return Math.pow(1 - c, k) * c;
+  }
+  
+  function update() {
+    const c = parseInt(catchSlider.value) / 100;
+    catchValueEl.textContent = c.toFixed(2);
+    
+    safetyResultEl.textContent = (c * 100).toFixed(0) + '%';
+    expectedUncaughtEl.textContent = ((1 - c) / c).toFixed(2);
+    
+    const barWidth = 40;
+    const barGap = 20;
+    const barStartX = 70;
+    const barBaseY = 190;
+    const maxBarHeight = 150;
+    
+    let barsHTML = '';
+    for (let k = 0; k <= 6; k++) {
+      const prob = k < 6 ? geometricPMF(k, c) : Math.pow(1-c, 6);
+      const barHeight = prob * maxBarHeight;
+      const x = barStartX + k * (barWidth + barGap);
+      const y = barBaseY - barHeight;
+      
+      const color = k === 0 ? '#839788' : '#a06060';
+      const opacity = k === 0 ? 1 : Math.max(0.3, 0.8 - k * 0.1);
+      
+      barsHTML += `<rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" fill="${color}" opacity="${opacity}" rx="3"/>`;
+      if (prob > 0.01) {
+        barsHTML += `<text x="${x + barWidth/2}" y="${y - 5}" text-anchor="middle" fill="#4a5a4f" font-size="10" font-weight="bold">${(prob * 100).toFixed(0)}%</text>`;
+      }
+    }
+    probBarsG.innerHTML = barsHTML;
+  }
+  
+  catchSlider.addEventListener('input', update);
+  update();
+});
+</script>
+
+---
+
 ## AI Control: Audit & Defer Protocols
 
 Explore how different deferral protocols trade off **safety** vs **usefulness**. Move the defer threshold to trace each protocol's Pareto frontier.
