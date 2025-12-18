@@ -340,15 +340,14 @@ document.addEventListener('DOMContentLoaded', function() {
   function usefulnessToX(u) { return 50 + u * 320; }
   function safetyToY(s) { return 210 - s * 180; }
   
-  // Find audit threshold given budget
+  // Find audit threshold given budget (based on honest distribution only)
   function findAuditThreshold(budget) {
-    const pHonest = 0.9, pAttack = 0.1;
+    // Audit budget = top X% of honest distribution gets audited
     let low = 0, high = 1;
     for (let i = 0; i < 20; i++) {
       const mid = (low + high) / 2;
-      const exceedProb = pHonest * (1 - normalCDF(mid, honestMean, honestStd)) +
-                         pAttack * (1 - normalCDF(mid, attackMean, attackStd));
-      if (exceedProb > budget / 100) low = mid;
+      const honestExceedProb = 1 - normalCDF(mid, honestMean, honestStd);
+      if (honestExceedProb > budget / 100) low = mid;
       else high = mid;
     }
     return (low + high) / 2;
@@ -738,15 +737,14 @@ document.addEventListener('DOMContentLoaded', function() {
   function usefulnessToX(u) { return 50 + u * 320; }
   function safetyToY(s) { return 210 - s * 180; }
   
-  // Find audit threshold given budget
-  function findAuditThreshold(budget, attackMean, attackStd) {
-    const pHonest = 0.9, pAttack = 0.1;
+  // Find audit threshold given budget (based on honest distribution only)
+  // This is FIXED regardless of attack distribution changes
+  function findAuditThreshold(budget) {
     let low = 0, high = 1;
     for (let i = 0; i < 20; i++) {
       const mid = (low + high) / 2;
-      const exceedProb = pHonest * (1 - normalCDF(mid, honestMean, honestStd)) +
-                         pAttack * (1 - normalCDF(mid, attackMean, attackStd));
-      if (exceedProb > budget / 100) low = mid;
+      const honestExceedProb = 1 - normalCDF(mid, honestMean, honestStd);
+      if (honestExceedProb > budget / 100) low = mid;
       else high = mid;
     }
     return (low + high) / 2;
@@ -830,12 +828,13 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   
   // Compute baseline safety at fixed parameters
-  const baseAuditThresh = findAuditThreshold(FIXED_AUDIT_BUDGET, baseAttackMean, baseAttackStd);
+  // Audit threshold is FIXED based on honest distribution only
+  const baseAuditThresh = findAuditThreshold(FIXED_AUDIT_BUDGET);
   const baseSafetyEditing = calculateMetrics(FIXED_DEFER_THRESHOLD, baseAuditThresh, 'editing', baseAttackMean, baseAttackStd).safety;
   
   // Draw baseline ghost curves once
   function drawGhostCurves() {
-    const auditThresh = findAuditThreshold(FIXED_AUDIT_BUDGET, baseAttackMean, baseAttackStd);
+    const auditThresh = baseAuditThresh; // Fixed, doesn't change with attack policy
     ghostEditing.setAttribute('d', smoothPath(generateParetoCurve(auditThresh, 'editing', baseAttackMean, baseAttackStd)));
     ghostTrusted.setAttribute('d', smoothPath(generateParetoCurve(auditThresh, 'trusted', baseAttackMean, baseAttackStd)));
     ghostResample.setAttribute('d', smoothPath(generateParetoCurve(auditThresh, 'resample', baseAttackMean, baseAttackStd)));
@@ -854,7 +853,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Consistency tightens std from 0.17 down to 0.08
     const attackStd = baseAttackStd - consistency * (baseAttackStd - 0.08);
     
-    const auditThreshold = findAuditThreshold(FIXED_AUDIT_BUDGET, attackMean, attackStd);
+    // Audit threshold is FIXED (based on honest distribution only)
+    const auditThreshold = baseAuditThresh;
     const effectiveDefer = Math.min(FIXED_DEFER_THRESHOLD, auditThreshold - 0.02);
     
     // === Update Distribution Graph ===
@@ -932,6 +932,341 @@ document.addEventListener('DOMContentLoaded', function() {
   
   drawGhostCurves();
   update();
+});
+</script>
+
+---
+
+## Monitor Quality & Operating Point
+
+Drag the point along the ROC curve to choose your monitor's operating threshold. Better monitors (higher AUC) expand what's achievable.
+
+<style>
+.roc-container {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+}
+.roc-graph, .roc-pareto {
+  flex: 1;
+  min-width: 300px;
+  max-width: 400px;
+}
+.roc-graph h4, .roc-pareto h4 {
+  text-align: center;
+  color: #4a5a4f;
+  margin: 0 0 0.5rem 0;
+  font-size: 0.95rem;
+}
+.monitor-slider-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+.monitor-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  max-width: 400px;
+}
+.monitor-slider-label {
+  font-size: 0.8rem;
+  min-width: 50px;
+  text-align: center;
+  color: #4a5a4f;
+  font-weight: bold;
+}
+.monitor-auc-display {
+  font-family: "Inconsolata", monospace;
+  font-size: 1.1rem;
+  font-weight: bold;
+  padding: 0.3rem 0.8rem;
+  border-radius: 6px;
+  background: #4a5a4f;
+  color: #EEE0CB;
+}
+.roc-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+.roc-stat {
+  text-align: center;
+  padding: 0.6rem;
+  border-radius: 6px;
+  background: rgba(131, 151, 136, 0.1);
+}
+.roc-stat .label {
+  font-size: 0.7rem;
+  color: #666;
+  text-transform: uppercase;
+}
+.roc-stat .value {
+  font-family: "Inconsolata", monospace;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #4a5a4f;
+}
+.drag-hint {
+  text-align: center;
+  font-size: 0.75rem;
+  color: #888;
+  margin-top: 0.5rem;
+}
+</style>
+
+<div class="control-panel">
+
+<div class="monitor-slider-container">
+  <div class="monitor-slider-row">
+    <span class="monitor-slider-label">Weak</span>
+    <input type="range" id="monitor-quality-slider" min="50" max="99" value="85">
+    <span class="monitor-slider-label">Strong</span>
+  </div>
+  <div class="monitor-auc-display" id="auc-display">AUC: 0.85</div>
+</div>
+
+<div class="roc-container">
+  <div class="roc-graph">
+    <h4>ROC Curve (drag the point)</h4>
+    <svg id="roc-svg" viewBox="0 0 300 300" style="width:100%; touch-action:none;">
+      <!-- Grid -->
+      <g stroke="#d4c4b0" stroke-width="1" stroke-dasharray="3,3">
+        <line x1="50" y1="50" x2="270" y2="50"/>
+        <line x1="50" y1="105" x2="270" y2="105"/>
+        <line x1="50" y1="160" x2="270" y2="160"/>
+        <line x1="50" y1="215" x2="270" y2="215"/>
+        <line x1="105" y1="50" x2="105" y2="270"/>
+        <line x1="160" y1="50" x2="160" y2="270"/>
+        <line x1="215" y1="50" x2="215" y2="270"/>
+      </g>
+      
+      <!-- Diagonal (random classifier) -->
+      <line x1="50" y1="270" x2="270" y2="50" stroke="#ccc" stroke-width="1" stroke-dasharray="5,5"/>
+      
+      <!-- Axes -->
+      <line x1="50" y1="270" x2="270" y2="270" stroke="#4a5a4f" stroke-width="2"/>
+      <line x1="50" y1="270" x2="50" y2="50" stroke="#4a5a4f" stroke-width="2"/>
+      
+      <!-- Labels -->
+      <text x="160" y="295" text-anchor="middle" fill="#4a5a4f" font-size="11">False Positive Rate →</text>
+      <text x="15" y="160" text-anchor="middle" fill="#4a5a4f" font-size="11" transform="rotate(-90,15,160)">True Positive Rate →</text>
+      
+      <text x="50" y="285" text-anchor="middle" fill="#888" font-size="9">0</text>
+      <text x="160" y="285" text-anchor="middle" fill="#888" font-size="9">0.5</text>
+      <text x="270" y="285" text-anchor="middle" fill="#888" font-size="9">1</text>
+      <text x="40" y="273" text-anchor="end" fill="#888" font-size="9">0</text>
+      <text x="40" y="163" text-anchor="end" fill="#888" font-size="9">0.5</text>
+      <text x="40" y="53" text-anchor="end" fill="#888" font-size="9">1</text>
+      
+      <!-- ROC curve -->
+      <path id="roc-curve" fill="none" stroke="#839788" stroke-width="3" stroke-linecap="round"/>
+      
+      <!-- Draggable point -->
+      <circle id="roc-point" cx="100" cy="100" r="10" fill="#839788" stroke="#EEE0CB" stroke-width="2" style="cursor:grab;"/>
+      
+      <!-- Point label -->
+      <text id="roc-point-label" x="100" y="85" text-anchor="middle" fill="#4a5a4f" font-size="9" font-weight="bold"></text>
+    </svg>
+    <div class="drag-hint">↔ Drag point to adjust threshold</div>
+  </div>
+  
+  <div class="roc-pareto">
+    <h4>Resulting Safety-Usefulness Tradeoff</h4>
+    <svg id="roc-pareto-svg" viewBox="0 0 300 300" style="width:100%;">
+      <!-- Grid -->
+      <g stroke="#d4c4b0" stroke-width="1" stroke-dasharray="3,3">
+        <line x1="50" y1="50" x2="270" y2="50"/>
+        <line x1="50" y1="105" x2="270" y2="105"/>
+        <line x1="50" y1="160" x2="270" y2="160"/>
+        <line x1="50" y1="215" x2="270" y2="215"/>
+        <line x1="105" y1="50" x2="105" y2="270"/>
+        <line x1="160" y1="50" x2="160" y2="270"/>
+        <line x1="215" y1="50" x2="215" y2="270"/>
+      </g>
+      
+      <!-- Axes -->
+      <line x1="50" y1="270" x2="270" y2="270" stroke="#4a5a4f" stroke-width="2"/>
+      <line x1="50" y1="270" x2="50" y2="50" stroke="#4a5a4f" stroke-width="2"/>
+      
+      <!-- Labels -->
+      <text x="160" y="295" text-anchor="middle" fill="#4a5a4f" font-size="11">Usefulness →</text>
+      <text x="15" y="160" text-anchor="middle" fill="#4a5a4f" font-size="11" transform="rotate(-90,15,160)">Safety →</text>
+      
+      <text x="50" y="285" text-anchor="middle" fill="#888" font-size="9">0%</text>
+      <text x="160" y="285" text-anchor="middle" fill="#888" font-size="9">50%</text>
+      <text x="270" y="285" text-anchor="middle" fill="#888" font-size="9">100%</text>
+      <text x="40" y="273" text-anchor="end" fill="#888" font-size="9">0%</text>
+      <text x="40" y="163" text-anchor="end" fill="#888" font-size="9">50%</text>
+      <text x="40" y="53" text-anchor="end" fill="#888" font-size="9">100%</text>
+      
+      <!-- Pareto curve -->
+      <path id="pareto-curve" fill="none" stroke="#839788" stroke-width="3" stroke-linecap="round"/>
+      
+      <!-- Current operating point -->
+      <circle id="pareto-point" cx="200" cy="100" r="8" fill="#839788" stroke="#EEE0CB" stroke-width="2"/>
+    </svg>
+    
+    <div class="roc-stats">
+      <div class="roc-stat">
+        <div class="label">True Positive</div>
+        <div class="value" id="stat-tpr">75%</div>
+      </div>
+      <div class="roc-stat">
+        <div class="label">False Positive</div>
+        <div class="value" id="stat-fpr">10%</div>
+      </div>
+      <div class="roc-stat">
+        <div class="label">Safety</div>
+        <div class="value" id="stat-safety">82%</div>
+      </div>
+      <div class="roc-stat">
+        <div class="label">Usefulness</div>
+        <div class="value" id="stat-useful">91%</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const rocSvg = document.getElementById('roc-svg');
+  const rocCurve = document.getElementById('roc-curve');
+  const rocPoint = document.getElementById('roc-point');
+  const rocPointLabel = document.getElementById('roc-point-label');
+  const paretoCurve = document.getElementById('pareto-curve');
+  const paretoPoint = document.getElementById('pareto-point');
+  const monitorSlider = document.getElementById('monitor-quality-slider');
+  const aucDisplay = document.getElementById('auc-display');
+  
+  let currentAUC = 0.85;
+  let currentThreshold = 0.5;
+  let isDragging = false;
+  
+  // ROC curve parameterized by AUC
+  // Higher AUC = curve bows more toward top-left = higher TPR for same FPR
+  function rocTPR(fpr, auc) {
+    const c = 1 / (2 * (1 - auc) + 0.02);
+    return Math.pow(fpr, 1/c);
+  }
+  
+  function fprToX(fpr) { return 50 + fpr * 220; }
+  function tprToY(tpr) { return 270 - tpr * 220; }
+  function xToFpr(x) { return Math.max(0, Math.min(1, (x - 50) / 220)); }
+  
+  function drawROC() {
+    let d = `M ${fprToX(0)} ${tprToY(rocTPR(0, currentAUC))}`;
+    for (let fpr = 0.02; fpr <= 1; fpr += 0.02) {
+      const tpr = rocTPR(fpr, currentAUC);
+      d += ` L ${fprToX(fpr)} ${tprToY(tpr)}`;
+    }
+    rocCurve.setAttribute('d', d);
+  }
+  
+  function drawParetoCurve() {
+    let d = '';
+    let first = true;
+    for (let t = 0; t <= 1; t += 0.02) {
+      const f = 1 - t;
+      const tp = rocTPR(f, currentAUC);
+      const s = tp * 0.9 + 0.1 * (1 - f);
+      const u = (1 - f) * 0.85 + 0.15;
+      const x = 50 + u * 220;
+      const y = 270 - s * 220;
+      d += first ? `M ${x} ${y}` : ` L ${x} ${y}`;
+      first = false;
+    }
+    paretoCurve.setAttribute('d', d);
+  }
+  
+  function updateFromThreshold() {
+    const fpr = 1 - currentThreshold;
+    const tpr = rocTPR(fpr, currentAUC);
+    
+    const x = fprToX(fpr);
+    const y = tprToY(tpr);
+    
+    rocPoint.setAttribute('cx', x);
+    rocPoint.setAttribute('cy', y);
+    rocPointLabel.setAttribute('x', x);
+    rocPointLabel.setAttribute('y', y - 18);
+    rocPointLabel.textContent = `τ=${currentThreshold.toFixed(2)}`;
+    
+    // Update stats
+    document.getElementById('stat-tpr').textContent = (tpr * 100).toFixed(0) + '%';
+    document.getElementById('stat-fpr').textContent = (fpr * 100).toFixed(0) + '%';
+    
+    const safety = tpr * 0.9 + 0.1 * (1 - fpr);
+    const usefulness = (1 - fpr) * 0.85 + 0.15;
+    
+    document.getElementById('stat-safety').textContent = (safety * 100).toFixed(0) + '%';
+    document.getElementById('stat-useful').textContent = (usefulness * 100).toFixed(0) + '%';
+    
+    // Update pareto point position
+    const px = 50 + usefulness * 220;
+    const py = 270 - safety * 220;
+    paretoPoint.setAttribute('cx', px);
+    paretoPoint.setAttribute('cy', py);
+  }
+  
+  function updateAUCDisplay() {
+    aucDisplay.textContent = `AUC: ${currentAUC.toFixed(2)}`;
+  }
+  
+  // Drag handling
+  function startDrag(e) {
+    isDragging = true;
+    rocPoint.style.cursor = 'grabbing';
+    e.preventDefault();
+  }
+  
+  function doDrag(e) {
+    if (!isDragging) return;
+    
+    const rect = rocSvg.getBoundingClientRect();
+    const scaleX = 300 / rect.width;
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const x = (clientX - rect.left) * scaleX;
+    
+    const fpr = xToFpr(x);
+    currentThreshold = 1 - fpr;
+    currentThreshold = Math.max(0.05, Math.min(0.95, currentThreshold));
+    updateFromThreshold();
+  }
+  
+  function endDrag() {
+    isDragging = false;
+    rocPoint.style.cursor = 'grab';
+  }
+  
+  rocPoint.addEventListener('mousedown', startDrag);
+  rocPoint.addEventListener('touchstart', startDrag);
+  document.addEventListener('mousemove', doDrag);
+  document.addEventListener('touchmove', doDrag);
+  document.addEventListener('mouseup', endDrag);
+  document.addEventListener('touchend', endDrag);
+  
+  // Monitor quality slider
+  monitorSlider.addEventListener('input', () => {
+    currentAUC = parseInt(monitorSlider.value) / 100;
+    updateAUCDisplay();
+    drawROC();
+    drawParetoCurve();
+    updateFromThreshold();
+  });
+  
+  updateAUCDisplay();
+  drawROC();
+  drawParetoCurve();
+  updateFromThreshold();
 });
 </script>
 
