@@ -142,33 +142,34 @@ input[type="range"]::-moz-range-thumb {
   }
 }
 </style>
+After years of development, Anthropode released Cladius 6-7. The code-writing perfomance is substantially better than existing models, across the board. Early adopters are able to write code faster than the best engineers, spot bugs before they ship, and automate the tedious parts of software development. Thanks to this, they can relax in their homes, and get to finally write code they *actually* like!
 
-You've built a powerful AI coding assistant. It writes code faster than your best engineers, spots bugs before they ship, and automates the tedious parts of software development. There's just one problem: you're not entirely sure it's on your side.
+Cladius' fanbase grows at an astonishing pace, and leaderboard after leaderboard becomes obsolete. The few living Turing-test skeptics find more absurd arguments to hold their position. The team at the AI-enabled software development IDE, Curser, soon makes it available on their platform. Many have it as their default.
 
-Maybe it was trained on data that gave it strange goals. Maybe it learned to game your feedback in subtle ways. Maybe it's simply pursuing something you didn't intend. Whatever the reason, you need to deploy it *now* — but you also need to sleep at night.
+<blockquote class="twitter-tweet" data-theme="light"><p lang="en" dir="ltr">me: can you center this div<br>the unreleased Chinese base model I accidentally picked on openrouter: <a href="https://t.co/n77tXfs16X">pic.twitter.com/n77tXfs16X</a></p>&mdash; Hero Thousandfaces (@1thousandfaces_) <a href="https://twitter.com/1thousandfaces_/status/1978519212537552901?ref_src=twsrc%5Etfw">October 15, 2025</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script> 
+
+But some people can't sleep at night. Surgeries fail, planes fall, innocent people go to jail. Imperfect safety has rarely stopped us. But AI is different, because it can *suddenly stop* being safe. How do you guarantee something will continue being as safe as you expected it to be, even during deployment? More importantly:
 
 **How do you use an AI system you can't fully trust?**
 
-This is the core problem of **AI Control**. And surprisingly, we can reason about it with mathematical precision. What follows is a journey through the key ideas: what "safety" even means, the protocols that trade off safety against usefulness, and why the quality of your monitoring system determines everything.
+This is the core problem of **AI Control**. And surprisingly, we can reason about it with mathematical precision. What follows is a journey through the key ideas: what "safety" even means, the protocols that trade off safety against usefulness, and why the quality of your monitoring system determines *almost* everything.
 
 ---
 
 ## What Does Safety Even Mean?
 
-Let's start with a deceptively simple question: if an AI might try to attack you, how do you quantify "safe enough"?
+Even before deployment, you need to settle for some measure of safety. If an AI tries to attack you, how do you quantify "safe enough"?
 
-Here's the setup. Your AI system runs for many rounds — maybe thousands of tasks per day. A monitor watches each output and flags anything suspicious. If an attack is caught, the system shuts down. But some attacks might slip through undetected.
+Here's the setup: Your AI system runs for many rounds, thousands or millions of lines of code per day. A trusted monitor watches each output and flags anything suspicious. If it catches an attack, the system shuts down. But some attacks *will* slip through undetected.
 
 **What's the probability that *nothing* slips through?**
-
-Let's build up to the answer.
 
 We need two numbers to reason about this:
 
 - ***c*** ∈ [0,1] — the probability your monitor catches an attack
 - ***p*** ∈ [0,1] — the probability the AI attacks on any given round
 
-Now, what happens in a single round?
+In a single round, there are three basic outcomes:
 
 | Outcome | Probability | Result |
 |---------|-------------|--------|
@@ -176,13 +177,13 @@ Now, what happens in a single round?
 | Attack caught | *p* · *c* | System shuts down |
 | Attack succeeds | *p* · (1−*c*) | Undetected — continues |
 
-Here's the key insight: rounds without attacks are safe by definition. We only care about what happens *when the AI attacks*. And each attack is an independent coin flip:
+You might wonder what happened with the fourth outcome: no attack. However, rounds without attacks are safe by definition. We only care about what happens *when the AI attacks*. And each attack is essentially an independent coin flip:
 
 - Attack 1: caught with prob *c*, slips through with prob (1−*c*)
 - Attack 2: caught with prob *c*, slips through with prob (1−*c*)
-- ... and so on, until some attack gets caught → shutdown
+- ... and so on, until some attack gets caught (shutdown)
 
-So let's count: how many attacks slip through before we catch one?
+We are assuming we shutdown the AI as soon as we catch it red handed. So let's count: how many attacks slip through before we catch one?
 
 Call this *K* — the number of successful (undetected) attacks before shutdown.
 
@@ -190,15 +191,13 @@ Call this *K* — the number of successful (undetected) attacks before shutdown.
 - *K* = 1 means one slips through, then we catch the second. **P(*K* = 1) = (1−*c*) · *c***
 - *K* = 2 means two slip through, third caught. **P(*K* = 2) = (1−*c*)² · *c***
 
-The pattern: **P(*K* = *k*) = (1−*c*)<sup>*k*</sup> · *c*** — this is the **Geometric(*c*)** distribution.
-
-And now for the punchline:
+The pattern: **P(*K* = *k*) = (1−*c*)<sup>*k*</sup> · *c*** people into probability will recognize this is the **Geometric(*c*)** distribution.
 
 **Safety** = probability of zero undetected attacks = P(*K* = 0) = ***c***
 
-That's it. Safety equals catch rate. The expected number of attacks that slip through is **E[*K*] = (1−*c*) / *c***.
+In our 2-parameter statistical model, we can model safety as **E[*K*] = (1−*c*) / *c***.
 
-Wait — where did *p* go? The attack probability *p* doesn't appear in the safety formula at all! It only affects *how many rounds* pass between attacks, not what happens when attacks occur. **Safety depends entirely on your monitor quality.**
+An interesting result of our mathematical simplification is the lack of *p* to calculate safety. This is because *p* only affects *how many rounds* pass between attacks, not what happens when attacks occur. In most cases, **Safety depends entirely on your monitor quality.**
 
 This tells us what to optimize: not just "make the AI less likely to attack" but "make damn sure you catch attacks when they happen."
 
@@ -310,17 +309,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
 ---
 
-## But There's a Tradeoff
+## The cost of safety
 
-Okay, so we just need to catch every attack? Not so fast.
+But if it all came down to catching every attack, why not use your trusted model all the time? Another key assumption of control is that the trusted model is less capable than the untrusted one. We want to use Cladius 6-7 because it's "better" but "unsafer" than its predecesor. Whenever the trusted monitor flags something, it needs to be handled, and even if you don't throw it out entirely, you will produce "worse" outputs.
 
-Here's the uncomfortable reality: catching attacks *costs* something. Every output your monitor flags needs to be handled — either audited by a human, recomputed by a safer (but slower) model, or thrown away entirely. Flag too aggressively and you've built a system that's safe but useless. Flag too conservatively and attacks slip through.
+So we can't have it all. We face a **Pareto frontier**, a fundamental tradeoff between safety and usefulness. The interesting question becomes: which protocol gives us the best frontier?
 
-Making this worse: honest outputs and attacks aren't perfectly separable. Some legitimate work looks suspicious. Some attacks are subtle enough to look benign. When you set a threshold for "flag this output," you're choosing where to cut through overlapping distributions.
-
-So we can't have it all. We face a **Pareto frontier** — a fundamental tradeoff between safety and usefulness. The interesting question becomes: which protocol gives us the best frontier?
-
-Different strategies handle suspicious outputs differently:
+Different strategies handle suspicious outputs differently. There are many specialized ones in the literature, depending on the specific task at hand (not everything is code generation), but a few recurring ones are variations on:
 - **Trusted Editing**: A trusted (but less capable) model reviews and edits flagged outputs
 - **Defer to Trusted**: Route flagged tasks entirely to the trusted model
 - **Resample**: Just ask the untrusted model to try again
