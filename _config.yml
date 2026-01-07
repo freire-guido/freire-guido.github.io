@@ -22,7 +22,7 @@ nav:
  - name: "research"
    link: "/research"
  - name: "blog"
-   link: "https://freireguido.substack.com"
+   link: "/blog"
  - name: "cv"
    link: "/cv.pdf"
  - name: "books"
