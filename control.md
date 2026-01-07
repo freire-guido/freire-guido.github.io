@@ -1459,6 +1459,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
 - **Games for AI Control: Models of Safety Evaluations of AI Deployment Protocols** (game-theoretic definition of control evaluations)
 
+<div style="text-align: center; margin: 3rem 0;">
+  <a href="/controlfaces" style="display: inline-flex; align-items: center; gap: 0.8rem; padding: 1rem 2rem; background-color: #839788; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; transition: transform 0.2s, background-color 0.2s;" onmouseover="this.style.transform='translateX(5px)'; this.style.backgroundColor='#6a7d6f';" onmouseout="this.style.transform='translateX(0)'; this.style.backgroundColor='#839788';">
+    <span>Next: The Many Faces of AI Control</span>
+    <span style="font-size: 1.2rem;">→</span>
+  </a>
+</div>
+
 <p style="text-align: center; color: #5a5a5a; font-size: 0.85rem; margin-top: 2rem;">
 <em>Based on <a href="https://arxiv.org/abs/2312.06942">AI Control: Improving Safety Despite Intentional Subversion</a> (Greenblatt et al., 2023)</em>
 </p>
