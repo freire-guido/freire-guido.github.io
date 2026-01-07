@@ -689,11 +689,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 Here's the uncomfortable part: everything above assumed a naive attacker.
 
-We modeled the attack distribution as fixed — but what if the AI is smart? What if it *learns* to evade your monitor? A sophisticated attacker produces outputs that look less suspicious, intentionally blending in with honest work. The attack distribution shifts left toward the honest one. Your carefully tuned thresholds? Now they're cutting through the *wrong* part of the overlap.
+We conditioned our model on a fixed attack distribution that we can post-hoc adapt to. Reality is sadly a bit more depressing, and we won't know what an attacker might get up to. A sophisticated attacker will try and produce outputs that don't look suspicious and intentionally blend it in with honest work.
 
-This is why AI control is fundamentally a *game*, not a one-time engineering problem. The red team (simulating a misaligned AI) tries to find attack strategies that slip past blue team defenses. The blue team hardens their protocols. Rinse, repeat.
+In our models, this looks as if the attack distribution shifted left toward the honest one. Now our carefully tuned thresholds are curring through usefulness!
 
-Let's see what happens as the attacker gets better. Crank up "evasiveness" (attacks that look more innocent) and "consistency" (less variance in attack behavior) and watch your safety margins erode:
+This is why AI control is fundamentally a *game*, not a one-time engineering problem. The red team (simulating a misaligned AI) tries to find attack strategies that slip past blue team defenses. The blue team hardens their protocols. Each team maximizes competing objectives.
 
 <div class="control-panel">
 
