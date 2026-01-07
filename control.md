@@ -185,7 +185,7 @@ You might wonder what happened with the fourth outcome: no attack. However, roun
 
 We are assuming we shutdown the AI as soon as we catch it red handed. So let's count: how many attacks slip through before we catch one?
 
-Call this *K* — the number of successful (undetected) attacks before shutdown.
+Call this *K*, the number of successful (undetected) attacks before shutdown.
 
 - *K* = 0 means the first attack is caught. **P(*K* = 0) = *c***
 - *K* = 1 means one slips through, then we catch the second. **P(*K* = 1) = (1−*c*) · *c***
@@ -200,8 +200,6 @@ In our 2-parameter statistical model, we can model safety as **E[*K*] = (1−*c*
 An interesting result of our mathematical simplification is the lack of *p* to calculate safety. This is because *p* only affects *how many rounds* pass between attacks, not what happens when attacks occur. In most cases, **Safety depends entirely on your monitor quality.**
 
 This tells us what to optimize: not just "make the AI less likely to attack" but "make damn sure you catch attacks when they happen."
-
-Let's see this in action. Play with the catch rate below and watch how the distribution of undetected attacks changes:
 
 <div class="control-panel">
 <h4 style="text-align: center; margin-top: 0;">Geometric Distribution of Undetected Attacks</h4>
@@ -313,14 +311,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 But if it all came down to catching every attack, why not use your trusted model all the time? Another key assumption of control is that the trusted model is less capable than the untrusted one. We want to use Cladius 6-7 because it's "better" but "unsafer" than its predecesor. Whenever the trusted monitor flags something, it needs to be handled, and even if you don't throw it out entirely, you will produce "worse" outputs.
 
-So we can't have it all. We face a **Pareto frontier**, a fundamental tradeoff between safety and usefulness. The interesting question becomes: which protocol gives us the best frontier?
+So we can't have it all. We face a fundamental tradeoff between safety and usefulness. The interesting question becomes: which protocol gives us the best rate?
 
 Different strategies handle suspicious outputs differently. There are many specialized ones in the literature, depending on the specific task at hand (not everything is code generation), but a few recurring ones are variations on:
 - **Trusted Editing**: A trusted (but less capable) model reviews and edits flagged outputs
 - **Defer to Trusted**: Route flagged tasks entirely to the trusted model
 - **Resample**: Just ask the untrusted model to try again
-
-Each protocol traces a different curve through safety-usefulness space. Explore the tradeoffs below:
 
 <div class="control-panel">
 
