@@ -1116,11 +1116,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 So everything hinges on the monitor. How do we make it better? And once we have one, how do we tune it?
 
-This is where the **ROC curve** comes in — the classic tool for reasoning about classifiers. It shows you the tradeoff between catching real attacks (true positive rate) and falsely flagging honest work (false positive rate). Every point on the curve is a different threshold you could set.
-
-Think of it as a dial. Turn it one way: catch more attacks, but trigger more false alarms. Turn it the other way: fewer interruptions, but more attacks slip through. You can't escape the tradeoff — but a *better monitor* (higher AUC) gives you a better frontier to choose from.
-
-Drag the point along the curve to see how your choice of threshold affects both detection and the resulting safety-usefulness tradeoff:
+We can treat the monitor as a basic binary classifier for analysis purposes, and look at the **ROC curve**. This shows us the tradeoff between catchign real attacks and falsely flagging honest work.
 
 <style>
 .roc-container {
