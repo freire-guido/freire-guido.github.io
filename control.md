@@ -1449,25 +1449,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
 ---
 
-## Why This Matters
+## Read more!
 
-These aren't theoretical games.
+- **AI Control: Improving Safety Despite Intentional Subversion** [https://arxiv.org/abs/2312.06942](https://arxiv.org/abs/2312.06942) (seminal AI Control paper)
 
-As AI systems become more capable, we face a genuine dilemma: the models that can do the most useful work are also the hardest to trust. We can't wait until we've "solved alignment" to deploy powerful AI — the economic and competitive pressures are too strong. But we also can't deploy systems that might subvert us without *any* safeguards.
+- **Ctrl-Z: Controlling AI Agents via Resampling** [https://arxiv.org/pdf/2504.10374](https://arxiv.org/pdf/2504.10374) (introduced resampling)
 
-AI Control offers a middle path. Instead of asking "is this AI aligned?" (a question we might not be able to answer), we ask "can we use this AI safely even if it isn't?" That reframing turns an impossibly vague alignment question into a concrete engineering problem with measurable safety guarantees.
+- **Optimizing AI Agent Attacks With Synthetic Data** [https://arxiv.org/pdf/2511.02823](https://arxiv.org/pdf/2511.02823) (statistical view of control evaluations)
 
-The key insights from this framework:
-
-1. **Safety = catch rate.** The probability of an undetected attack depends only on your monitor quality, not on how often the AI "tries" to attack.
-
-2. **Tradeoffs are real.** There's no free lunch — better safety costs usefulness. But the right protocols can give you a much better Pareto frontier.
-
-3. **It's adversarial.** You're not optimizing against a fixed distribution. The attack policy will improve. Your defenses need to anticipate this.
-
-4. **The monitor is everything.** Better monitoring research expands what's possible. This is where the leverage is.
-
-The window for getting this right isn't infinite. We need people thinking carefully about control *before* the systems arrive that require it.
+- **Games for AI Control: Models of Safety Evaluations of AI Deployment Protocols** (game-theoretic definition of control evaluations)
 
 <p style="text-align: center; color: #5a5a5a; font-size: 0.85rem; margin-top: 2rem;">
 <em>Based on <a href="https://arxiv.org/abs/2312.06942">AI Control: Improving Safety Despite Intentional Subversion</a> (Greenblatt et al., 2023)</em>
