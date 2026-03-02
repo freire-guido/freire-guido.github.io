@@ -2,17 +2,21 @@
 layout: default
 ---
 
+I'll be in Rio for [ICLR 2026](https://trustworthy-ai-workshop.github.io/iclr2026/), let's meet!
+
+---
+
 ## About Me
 
 <img class="profile-picture" src="guido.jpeg">
 
 Hi! I am a Data Science MSc. from the University of Buenos Aires (UBA).
 
-I am currently an AI Safety Researcher at the Institute of Computing Sciences, UBA. I am thankful to be funded by the [AISAR](https://aisafety.ar) Open Philanthropy program. Recently, my research revolves around safer deployment methods against biases for medical LLMs.
+I am currently an AI Safety Fellow at [MARS](https://caish.org/mars), part of the Cambridge Artificial Intelligence Safety Hub (CAISH). Previously, I researched at the Institute of Computing Sciences at UBA. My research is funded by the [AISAR](https://aisafety.ar) Open Philanthropy program and revolves around safer deployment methods for medical LLMs, particularly mitigating bias in high-stakes settings.
 
 In another life, I worked as a tech consultant in [ZS Associates](https://www.zs.com/solutions/life-sciences-randd-and-medical) for 2+ years.
 
-In my copious free time, I moderate Wikipedia and contribute to reducing the english-spanish language resource gap. Being a trumpet player, I enjoy jazz music.
+Outside of work, I moderate Wikipedia and contribute to reducing the English-Spanish language resource gap. Being a trumpet player, I enjoy jazz music.
 
 # Select experience
 
