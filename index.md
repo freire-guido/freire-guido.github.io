@@ -2,12 +2,6 @@
 layout: default
 ---
 
-I'll
-
-I'll be in Rio for [ICLR 2026](https://trustworthy-ai-workshop.github.io/iclr2026/), let's meet!
-
----
-
 ## About Me
 
 <img class="profile-picture" src="guido.jpeg">
@@ -29,3 +23,14 @@ Outside of work, I moderate Wikipedia and contribute to reducing the English-Spa
 - Student Volunteer @ XXI Latin Ibero-American Conference in Operations Research - 2022
 - Iberoamerican Mathematics Olympiad, Participant - 2017
 - Argentine Mathematics Olympiad, Gold Medal - 2016
+
+---
+
+## News
+
+- **May 2026**: Will be in Boston for [CAMBRIA](https://www.cbai.ai/cambria), an intensive mechanistic interpretability bootcamp.
+- **Apr 2026**: Presenting my AISAR work on AI control for health at [ICLR 2026](https://trustworthy-ai-workshop.github.io/iclr2026/). Let's meet!
+- **Apr 2026**: Attending [ControlConf](https://controlconf.org/), selected for the pre-conference workshop.
+- **Dec 2025**: I'll be working on red teaming and elicitation for AI control in [MARS](https://caish.org/mars).
+- **Jun 2025**: I was selected as a Research Fellow for [AISAR](https://aisafety.ar)!
+- **Dec 2024**: Honor Diploma (MSc.), University of Buenos Aires
