@@ -27,3 +27,4 @@ Title, Author, Format, Acquisition Date
 - *Borges Esencial*, Jorge Luis Borges (and others), Hardcover, 2018
 - *The Alignment Problem*, Brian Christian, Softcover, 2025
 - *Human Compatible*, Stuart Russell, Softcover, 2025
+- *Hackers & Painters*, Paul Graham, Softcover, 2026 
