@@ -1,6 +1,6 @@
 ---
 layout: default
-title: AI Control
+title: An AI Control Primer
 ---
 
 <style>
