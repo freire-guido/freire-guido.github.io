@@ -25,3 +25,5 @@ nav:
    link: "/cv.pdf"
  - name: "books"
    link: "/books"
+ - name: "blog"
+   link: "/blog"
