@@ -1,10 +1,10 @@
 ---
-layout: default
----
+
+## layout: default
 
 ## About Me
 
-<img class="profile-picture" src="guido.jpeg">
+
 
 Hi! I am a Data Science MSc. from the University of Buenos Aires (UBA).
 
