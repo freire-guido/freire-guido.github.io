@@ -26,5 +26,7 @@ Title, Author, Format, Acquisition Date
 - *Armada*, Ernest Cline, Softcover, 2016
 - *Borges Esencial*, Jorge Luis Borges (and others), Hardcover, 2018
 - *The Alignment Problem*, Brian Christian, Softcover, 2025
+- *Normal People*, Sally Rooney, Softcover, 2026
+- *Kitchen Confidential*, Anthony Bourdain, Softcover, 2026
 - *Human Compatible*, Stuart Russell, Softcover, 2025
 - *Hackers & Painters*, Paul Graham, Softcover, 2026 
