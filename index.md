@@ -4,6 +4,8 @@ layout: default
 
 ## About Me
 
+<img class="profile-picture" src="guido.jpeg">
+
 Hi! I am a Data Science MSc. from the University of Buenos Aires (UBA).
 
 I am currently an AI Safety Fellow at [MARS](https://caish.org/mars), part of the Cambridge Artificial Intelligence Safety Hub (CAISH). Previously, I researched at the Institute of Computing Sciences at UBA. My research is funded by the [AISAR](https://aisafety.ar) Open Philanthropy program and revolves around safer deployment methods for medical LLMs, particularly mitigating bias in high-stakes settings.
