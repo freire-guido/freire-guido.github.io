@@ -11,6 +11,27 @@ description: Every hour of 2018, mapped and color-coded, recovered from a spread
 When I was 16 I decided to log what I was doing, every single hour of every single day, for an entire year: one cell per hour in a Google Sheet, sorted into twelve color coded categories. I recently dug 2018 back out of Google Drive. Here it is, 365 days times 24 hours, all 8,760 of them. Scroll down to go through the year.
 
 <style>
+.vida-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.1rem;
+  font-size: 0.8rem;
+  margin: 1.2rem 0 1.2rem 0;
+  justify-content: center;
+}
+.vida-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
+}
+.vida-swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
 .vida-row {
   display: flex;
   gap: 0.6rem;
@@ -31,6 +52,13 @@ When I was 16 I decided to log what I was doing, every single hour of every sing
 .vida-gridcol {
   flex: 1 1 0;
   min-width: 0;
+}
+.vida-hourlabel-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.65rem;
+  color: #999;
+  margin-bottom: 0.25rem;
 }
 #vida-grid {
   display: block;
@@ -55,42 +83,12 @@ When I was 16 I decided to log what I was doing, every single hour of every sing
 .vida-comment b {
   color: #4a5a4f;
 }
-.vida-caption {
-  font-size: 0.8rem;
-  color: #999;
-  text-align: center;
-  margin: 0.4rem 0 0 0;
-}
-.vida-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem 1.1rem;
-  font-size: 0.8rem;
-  margin: 1.2rem 0 1rem 0;
-  justify-content: center;
-}
-.vida-legend-item {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  white-space: nowrap;
-}
-.vida-swatch {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  border-radius: 2px;
-  flex-shrink: 0;
-}
 @media (max-width: 600px) {
   .vida-row {
-    flex-direction: column;
+    display: block;
   }
   .vida-monthcol {
     display: none;
-  }
-  .vida-commentscol {
-    min-height: 0;
   }
   .vida-comment {
     position: static;
@@ -99,7 +97,20 @@ When I was 16 I decided to log what I was doing, every single hour of every sing
 }
 </style>
 
-<p class="vida-caption">Each row is a day, January 1st at the top to December 31st at the bottom. Each column is an hour, 00:00 to 23:00, left to right.</p>
+<div class="vida-legend">
+  <div class="vida-legend-item"><span class="vida-swatch" style="background:hsl(225, 45%, 28%)"></span>Sleep</div>
+  <div class="vida-legend-item"><span class="vida-swatch" style="background:hsl(25, 85%, 58%)"></span>Games</div>
+  <div class="vida-legend-item"><span class="vida-swatch" style="background:hsl(35, 25%, 58%)"></span>School</div>
+  <div class="vida-legend-item"><span class="vida-swatch" style="background:hsl(195, 60%, 78%)"></span>Relax</div>
+  <div class="vida-legend-item"><span class="vida-swatch" style="background:hsl(340, 65%, 68%)"></span>Social</div>
+  <div class="vida-legend-item"><span class="vida-swatch" style="background:hsl(150, 25%, 48%)"></span>Productive</div>
+  <div class="vida-legend-item"><span class="vida-swatch" style="background:hsl(48, 75%, 62%)"></span>Family</div>
+  <div class="vida-legend-item"><span class="vida-swatch" style="background:hsl(5, 70%, 52%)"></span>Travel</div>
+  <div class="vida-legend-item"><span class="vida-swatch" style="background:hsl(0, 0%, 80%)"></span>Junk</div>
+  <div class="vida-legend-item"><span class="vida-swatch" style="background:hsl(175, 40%, 42%)"></span>Extracurricular</div>
+  <div class="vida-legend-item"><span class="vida-swatch" style="background:hsl(280, 40%, 62%)"></span>Creative</div>
+  <div class="vida-legend-item"><span class="vida-swatch" style="background:hsl(100, 50%, 46%)"></span>Exercise</div>
+</div>
 
 <div class="vida-row">
   <div class="vida-monthcol">
@@ -117,6 +128,10 @@ When I was 16 I decided to log what I was doing, every single hour of every sing
     <span style="top:91.51%">Dec</span>
   </div>
   <div class="vida-gridcol">
+    <div class="vida-hourlabel-row">
+      <span>00:00</span>
+      <span>23:00</span>
+    </div>
     <canvas id="vida-grid" width="336" height="2190" role="img" aria-label="Grid of 8,760 hourly activity blocks for 2018, one row per day and one column per hour, color coded by activity"></canvas>
   </div>
   <div class="vida-commentscol">
@@ -125,21 +140,6 @@ When I was 16 I decided to log what I was doing, every single hour of every sing
     <div class="vida-comment" style="top:65%"><b>Late August into September: Japan.</b> You can see exactly where. The dark blue sleep block jumps from the left edge of the row to the middle and stays there for two weeks. Buenos Aires and Tokyo are 12 hours apart, almost exactly half a day, so my schedule did not shift, it flipped: from sleeping roughly midnight to 8am, to sleeping roughly 10am to 7pm, within about a day of landing. The travel days on each end (Aug 19, 20, Sep 3, 4) all show zero hours of sleep. Four days after getting home, on Sep 8, I logged 16 hours of sleep, my biggest sleep day of the year, paying the whole jet lag debt off in one go.</div>
     <div class="vida-comment" style="top:95%"><b>December 31st.</b> 365 rows, 365 days, all fully filled in. 16 year old me did not miss a single hour all year.</div>
   </div>
-</div>
-
-<div class="vida-legend">
-    <div class="vida-legend-item"><span class="vida-swatch" style="background:hsl(225, 45%, 28%)"></span>Sleep: 36.0%</div>
-    <div class="vida-legend-item"><span class="vida-swatch" style="background:hsl(25, 85%, 58%)"></span>Games: 22.0%</div>
-    <div class="vida-legend-item"><span class="vida-swatch" style="background:hsl(35, 25%, 58%)"></span>School: 15.7%</div>
-    <div class="vida-legend-item"><span class="vida-swatch" style="background:hsl(195, 60%, 78%)"></span>Relax: 8.8%</div>
-    <div class="vida-legend-item"><span class="vida-swatch" style="background:hsl(340, 65%, 68%)"></span>Social: 3.3%</div>
-    <div class="vida-legend-item"><span class="vida-swatch" style="background:hsl(150, 25%, 48%)"></span>Productive: 3.0%</div>
-    <div class="vida-legend-item"><span class="vida-swatch" style="background:hsl(48, 75%, 62%)"></span>Family: 2.8%</div>
-    <div class="vida-legend-item"><span class="vida-swatch" style="background:hsl(5, 70%, 52%)"></span>Travel: 2.8%</div>
-    <div class="vida-legend-item"><span class="vida-swatch" style="background:hsl(0, 0%, 80%)"></span>Junk: 2.6%</div>
-    <div class="vida-legend-item"><span class="vida-swatch" style="background:hsl(175, 40%, 42%)"></span>Extracurricular: 1.4%</div>
-    <div class="vida-legend-item"><span class="vida-swatch" style="background:hsl(280, 40%, 62%)"></span>Creative: 1.2%</div>
-    <div class="vida-legend-item"><span class="vida-swatch" style="background:hsl(100, 50%, 46%)"></span>Exercise: 0.4%</div>
 </div>
 
 By the numbers: 3,151 hours asleep (about 8.6 a night, 36% of the year), 1,931 hours of games versus 267 hours of "productive" time (about 7 to 1, or 22% versus 3%), 39 hours of exercise for the entire year (about 6 minutes a day), and 224 hours filed under "basura," which is Spanish for trash.
