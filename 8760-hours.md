@@ -83,6 +83,51 @@ When I was 16 I decided to log what I was doing, every single hour of every sing
 .vida-comment b {
   color: #4a5a4f;
 }
+.vida-photo-tooltip {
+  position: fixed;
+  display: none;
+  z-index: 1000;
+  width: 150px;
+  background: #fff8ef;
+  border: 1px solid #BAA898;
+  border-radius: 6px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+  padding: 6px;
+  pointer-events: none;
+  font-size: 0.7rem;
+  line-height: 1.35;
+}
+.vida-photo-tooltip img {
+  display: block;
+  width: 100%;
+  height: 138px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-bottom: 4px;
+}
+.vida-photo-tooltip .vida-photo-place {
+  font-weight: bold;
+  color: #4a5a4f;
+}
+.vida-photo-tooltip .vida-photo-date {
+  color: #999;
+}
+.vida-photo-tooltip .vida-photo-cat {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 2px;
+}
+.vida-photo-tooltip .vida-photo-cat .vida-swatch {
+  width: 9px;
+  height: 9px;
+}
+.vida-hint {
+  text-align: center;
+  font-size: 0.75rem;
+  color: #999;
+  margin: -0.6rem 0 0.6rem 0;
+}
 @media (max-width: 600px) {
   .vida-row {
     display: block;
@@ -112,6 +157,15 @@ When I was 16 I decided to log what I was doing, every single hour of every sing
   <div class="vida-legend-item"><span class="vida-swatch" style="background:hsl(100, 50%, 46%)"></span>Exercise</div>
 </div>
 
+<p class="vida-hint">A few tiles have a white border. Hover (or tap) one to see the photo.</p>
+
+<div class="vida-photo-tooltip" id="vida-photo-tooltip">
+  <img src="" alt="">
+  <div class="vida-photo-place"></div>
+  <div class="vida-photo-date"></div>
+  <div class="vida-photo-cat"><span class="vida-swatch"></span><span></span></div>
+</div>
+
 <div class="vida-row">
   <div class="vida-monthcol">
     <span style="top:0.00%">Jan</span>
@@ -137,6 +191,7 @@ When I was 16 I decided to log what I was doing, every single hour of every sing
   <div class="vida-commentscol">
     <div class="vida-comment" style="top:8%"><b>Early February.</b> Summer vacation. I woke up at 11:20am on average that month, and on Feb 6 I logged 14 of 24 hours as &quot;play,&quot; my single biggest day of the year for that category.</div>
     <div class="vida-comment" style="top:16%"><b>March.</b> School starts, and you can watch the tan column light up here and stay lit for most of the rest of the year. You can also watch my bedtime creep earlier in real time. In January and February there is a 0% chance I am asleep by midnight. By June, deep into the school year, that number is 87% (97% by 1am). July, winter break, loosens it up again, and by December summer vacation has reset the clock completely.</div>
+    <div class="vida-comment" style="top:54%"><b>Mid July.</b> Winter break in Argentina, so a week at the beach in Villa Gesell. The two five hour travel streaks on either side, July 16 and July 24, are the road trip there and back.</div>
     <div class="vida-comment" style="top:65%"><b>Late August into September: Japan.</b> You can see exactly where. The dark blue sleep block jumps from the left edge of the row to the middle and stays there for two weeks. Buenos Aires and Tokyo are 12 hours apart, almost exactly half a day, so my schedule did not shift, it flipped: from sleeping roughly midnight to 8am, to sleeping roughly 10am to 7pm, within about a day of landing. The travel days on each end (Aug 19, 20, Sep 3, 4) all show zero hours of sleep. Four days after getting home, on Sep 8, I logged 16 hours of sleep, my biggest sleep day of the year, paying the whole jet lag debt off in one go.</div>
     <div class="vida-comment" style="top:95%"><b>December 31st.</b> 365 rows, 365 days, all fully filled in. 16 year old me did not miss a single hour all year.</div>
   </div>
@@ -177,5 +232,113 @@ By the numbers: 3,151 hours asleep (about 8.6 a night, 36% of the year), 1,931 h
     y += monthDays[m] * ch;
     ctx.fillRect(0, y - 1, canvas.width, 1);
   }
+
+  var catNames = {
+    d: 'Sleep', j: 'Games', c: 'School', r: 'Relax', s: 'Social', p: 'Productive',
+    f: 'Family', v: 'Travel', b: 'Junk', e: 'Extracurricular', k: 'Creative', x: 'Exercise'
+  };
+  var photos = [
+    {day: 42,  hour: 15, src: '/2018_pictures/thumbs/IMG_20180212_154237.jpg', date: 'Feb 12, 2018', time: '3:42pm', place: 'Buenos Aires', cat: 'f'},
+    {day: 151, hour: 11, src: '/2018_pictures/thumbs/IMG_20180601_111145.jpg', date: 'Jun 1, 2018', time: '11:11am', place: 'Buenos Aires', cat: 'c'},
+    {day: 163, hour: 11, src: '/2018_pictures/thumbs/IMG_20180613_112234.jpg', date: 'Jun 13, 2018', time: '11:22am', place: 'Buenos Aires', cat: 'c'},
+    {day: 185, hour: 15, src: '/2018_pictures/thumbs/IMG_20180705_153658.jpg', date: 'Jul 5, 2018', time: '3:36pm', place: 'Buenos Aires', cat: 'c'},
+    {day: 203, hour: 13, src: '/2018_pictures/thumbs/IMG_20180723_134159.jpg', date: 'Jul 23, 2018', time: '1:42pm', place: 'Villa Gesell', cat: 'x'},
+    {day: 208, hour: 18, src: '/2018_pictures/thumbs/IMG_20180728_183053.jpg', date: 'Jul 28, 2018', time: '6:30pm', place: 'Buenos Aires', cat: 'k'},
+    {day: 230, hour: 1,  src: '/2018_pictures/thumbs/IMG_20180819_010357.jpg', date: 'Aug 19, 2018', time: '1:03am', place: 'Rio de Janeiro', cat: 'v'},
+    {day: 231, hour: 12, src: '/2018_pictures/thumbs/IMG_20180821_004023.jpg', date: 'Aug 21, 2018', time: '12:40am', place: 'Tokyo', cat: 'v'},
+    {day: 231, hour: 21, src: '/2018_pictures/thumbs/IMG_20180821_095826.jpg', date: 'Aug 21, 2018', time: '9:58am', place: 'Tokyo', cat: 'b'},
+    {day: 233, hour: 5,  src: '/2018_pictures/thumbs/IMG_20180822_171557_01.jpg', date: 'Aug 22, 2018', time: '5:15pm', place: 'Tokyo', cat: 'v'},
+    {day: 239, hour: 7,  src: '/2018_pictures/thumbs/IMG_20180828_190909.jpg', date: 'Aug 28, 2018', time: '7:09pm', place: 'Morioka', cat: 's'},
+    {day: 243, hour: 0,  src: '/2018_pictures/thumbs/IMG_20180901_125116.jpg', date: 'Sep 1, 2018', time: '12:51pm', place: 'Morioka', cat: 'p'},
+    {day: 244, hour: 22, src: '/2018_pictures/thumbs/IMG_20180903_101841.jpg', date: 'Sep 3, 2018', time: '10:18am', place: 'Tochigi', cat: 's'},
+    {day: 245, hour: 4,  src: '/2018_pictures/thumbs/IMG_20180903_161247.jpg', date: 'Sep 3, 2018', time: '4:12pm', place: 'Tokyo', cat: 'v'},
+    {day: 284, hour: 17, src: '/2018_pictures/thumbs/IMG_20181012_175253.jpg', date: 'Oct 12, 2018', time: '5:52pm', place: null, cat: 's'},
+    {day: 314, hour: 20, src: '/2018_pictures/thumbs/IMG_20181111_201621.jpg', date: 'Nov 11, 2018', time: '8:16pm', place: null, cat: 'j'}
+  ];
+  var photoMap = {};
+  photos.forEach(function (p) {
+    photoMap[p.day * 24 + p.hour] = p;
+  });
+
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = '#fff';
+  photos.forEach(function (p) {
+    ctx.strokeRect(p.hour * cw + 0.5, p.day * ch + 0.5, cw - 1, ch - 1);
+  });
+
+  var tooltip = document.getElementById('vida-photo-tooltip');
+  var tooltipImg = tooltip.querySelector('img');
+  var tooltipPlace = tooltip.querySelector('.vida-photo-place');
+  var tooltipDate = tooltip.querySelector('.vida-photo-date');
+  var tooltipCatSwatch = tooltip.querySelector('.vida-photo-cat .vida-swatch');
+  var tooltipCatName = tooltip.querySelector('.vida-photo-cat span:last-child');
+
+  function cellAt(clientX, clientY) {
+    var rect = canvas.getBoundingClientRect();
+    var x = (clientX - rect.left) * (canvas.width / rect.width);
+    var yy = (clientY - rect.top) * (canvas.height / rect.height);
+    var hour = Math.floor(x / cw);
+    var day = Math.floor(yy / ch);
+    if (hour < 0 || hour > 23 || day < 0 || day > 364) return null;
+    return photoMap[day * 24 + hour] || null;
+  }
+
+  function showTooltip(photo, clientX, clientY) {
+    tooltipImg.src = photo.src;
+    if (photo.place) {
+      tooltipPlace.textContent = photo.place;
+      tooltipDate.textContent = photo.date + ' · ' + photo.time;
+    } else {
+      tooltipPlace.textContent = photo.date;
+      tooltipDate.textContent = photo.time;
+    }
+    tooltipCatSwatch.style.background = colors[photo.cat];
+    tooltipCatName.textContent = catNames[photo.cat];
+    tooltip.style.display = 'block';
+    var tw = 164, th = 205;
+    var left = clientX + 14;
+    var top = clientY + 14;
+    if (left + tw > window.innerWidth) left = clientX - 14 - tw;
+    if (top + th > window.innerHeight) top = clientY - 14 - th;
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = top + 'px';
+  }
+
+  function hideTooltip() {
+    tooltip.style.display = 'none';
+    canvas.style.cursor = 'default';
+  }
+
+  canvas.addEventListener('mousemove', function (e) {
+    var photo = cellAt(e.clientX, e.clientY);
+    if (photo) {
+      canvas.style.cursor = 'pointer';
+      showTooltip(photo, e.clientX, e.clientY);
+    } else {
+      hideTooltip();
+    }
+  });
+  canvas.addEventListener('mouseleave', hideTooltip);
+
+  canvas.addEventListener('touchstart', function (e) {
+    var t = e.touches[0];
+    var photo = cellAt(t.clientX, t.clientY);
+    if (photo) {
+      e.preventDefault();
+      if (tooltip.style.display === 'block' && tooltipImg.src.indexOf(photo.src) !== -1) {
+        hideTooltip();
+      } else {
+        showTooltip(photo, t.clientX, t.clientY);
+      }
+    } else {
+      hideTooltip();
+    }
+  }, { passive: false });
+
+  document.addEventListener('touchstart', function (e) {
+    if (e.target !== canvas) {
+      hideTooltip();
+    }
+  });
 })();
 </script>
