@@ -12,6 +12,8 @@ I bought a Fitbit to keep track of my sleep and the occasional run. On July 7th,
 
 So I went and pulled the data. Here is the whole game, from kickoff to the final whistle. Every reading is a faint dot and the red line is the per-minute average. The vertical marks are the moments that mattered, with the goals drawn bolder. Hover or tap any of them to read what happened. The dimmed stretches are before kickoff, the two cooling breaks, half-time, and after the final whistle, when nothing was at stake and my heart rate shows it.
 
+The part I did not expect: the three biggest spikes of the whole match are the three Argentina goals, the ones under the bracket. Every time we scored my heart jumped, and Messi's equaliser took it to its peak of 164, while Egypt's two goals barely move the line. Dread, it turns out, is quieter than joy.
+
 <style>
 .hrz-wrap { margin: 1.6rem auto 0.5rem; max-width: 730px; }
 .hrz-wrap svg { width: 100%; height: auto; display: block; font-family: "Inconsolata", monospace; overflow: visible; }
@@ -51,9 +53,9 @@ By the numbers: a resting rate of 83 and a match average of 106, peaking at 164 
     {m:48,t:"Half-time",c:"HT",d:"Egypt lead 1-0 at the break."},
     {m:75,t:"Zico scores, then ruled out",c:"58'",d:"Zico turns in Hassan's ball and Egypt celebrate, but VAR finds a foul in the build-up and the goal is chalked off.",dash:1},
     {m:86,t:"Egypt 2-0 (Zico)",c:"67'",d:"Zico finishes off Hassan's cut-back. Two goals down in a World Cup knockout.",g:1},
-    {m:107,t:"Romero 2-1",c:"79'",d:"Romero heads in Messi's cross. The comeback starts here.",g:1},
-    {m:117,t:"Messi 2-2",c:"83'",d:"Messi smashes the equaliser into the roof of the net. 164 bpm, my highest reading of the day, sitting still.",g:1},
-    {m:126,t:"Enzo 3-2",c:"90+2'",d:"Enzo heads in Lautaro's cross in stoppage time. The winner.",g:1},
+    {m:107,t:"Romero 2-1",c:"79'",d:"Romero heads in Messi's cross. The comeback starts here.",g:1,ar:1},
+    {m:117,t:"Messi 2-2",c:"83'",d:"Messi smashes the equaliser into the roof of the net. 164 bpm, my highest reading of the day, sitting still.",g:1,ar:1},
+    {m:126,t:"Enzo 3-2",c:"90+2'",d:"Enzo heads in Lautaro's cross in stoppage time. The winner.",g:1,ar:1},
     {m:130,t:"Full time",c:"FT",d:"Argentina 3-2, through to the quarter-finals. The whistle goes and my pulse drops fast."}
   ];
   var half={a:48,b:63}, preEnd=0, postStart=130;
@@ -72,7 +74,7 @@ By the numbers: a resting rate of 83 and a match average of 106, peaking at 164 
     var mobile=dispW<560;
     var fs=Math.max(1, Math.min(2.3, 720/dispW)); // keep text/strokes legible when squished
     var W=720, H=mobile?470:300;
-    var px=30*fs, pr=44*fs, py=14*fs, pb=22*fs;
+    var px=30*fs, pr=44*fs, py=24*fs, pb=22*fs;
     var pw=W-px-pr, ph=H-py-pb;
     svg.setAttribute('viewBox','0 0 '+W+' '+H);
     while(svg.firstChild) svg.removeChild(svg.firstChild);
@@ -123,6 +125,14 @@ By the numbers: a resting rate of 83 and a match average of 106, peaking at 164 
       svg.appendChild(el('circle',{cx:x,cy:py,r:(ev.g?3.2:2.2)*fs,fill:'#4a5a4f','fill-opacity':ev.g?0.9:0.6}));
       lines.push({ev:ev,line:vline,baseOp:baseOp,baseW:baseW});
     });
+
+    // bracket grouping Argentina's three goals: every goal, a spike
+    var ar=events.filter(function(e){return e.ar;});
+    if(ar.length>1){
+      var bx1=sx(ar[0].m), bx2=sx(ar[ar.length-1].m), yB=py-10*fs;
+      svg.appendChild(el('path',{d:'M'+bx1.toFixed(1)+','+py+' L'+bx1.toFixed(1)+','+yB.toFixed(1)+' L'+bx2.toFixed(1)+','+yB.toFixed(1)+' L'+bx2.toFixed(1)+','+py,fill:'none',stroke:'#4a5a4f','stroke-opacity':0.8,'stroke-width':1.2*fs,'stroke-linejoin':'round'}));
+      svg.appendChild(el('text',{x:((bx1+bx2)/2).toFixed(1),y:(yB-4*fs).toFixed(1),'text-anchor':'middle',fill:'#4a5a4f','font-size':F(9),'font-weight':'bold'},'3 goals, 3 spikes'));
+    }
 
     // interaction: tap or hover anywhere on the plot, snap to nearest event
     var overlay=el('rect',{x:px,y:py,width:pw,height:ph,fill:'transparent'});
