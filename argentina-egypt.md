@@ -66,7 +66,7 @@ By the numbers: a resting rate of 83 and a match average of 106, peaking at 164 
   function sy(v){return py+ph-(v-Y0)/(Y1-Y0)*ph;}
 
   // dim bands: before kickoff, half-time, after full time (all flat)
-  function dim(a,b){svg.appendChild(el('rect',{x:sx(a),y:py,width:sx(b)-sx(a),height:ph,fill:'#ffffff','fill-opacity':0.05}));}
+  function dim(a,b){svg.appendChild(el('rect',{x:sx(a),y:py,width:sx(b)-sx(a),height:ph,fill:'#272727','fill-opacity':0.06}));}
   dim(XMIN,preEnd); dim(half.a,half.b); dim(postStart,XMAX);
   cool.forEach(function(c){dim(c.a,c.b);});
   svg.appendChild(el('text',{x:(sx(half.a)+sx(half.b))/2,y:py+12,'text-anchor':'middle',fill:'#777','font-size':9,'font-style':'italic'},'half time'));
@@ -74,7 +74,7 @@ By the numbers: a resting rate of 83 and a match average of 106, peaking at 164 
 
   // faint y guides
   [100,150].forEach(function(v){
-    svg.appendChild(el('line',{x1:px,y1:sy(v),x2:px+pw,y2:sy(v),stroke:'#ffffff','stroke-opacity':0.05,'stroke-width':1}));
+    svg.appendChild(el('line',{x1:px,y1:sy(v),x2:px+pw,y2:sy(v),stroke:'#272727','stroke-opacity':0.08,'stroke-width':1}));
     svg.appendChild(el('text',{x:px-5,y:sy(v)+3,'text-anchor':'end',fill:'#777','font-size':9},v));
   });
   // x clock ticks
@@ -88,7 +88,7 @@ By the numbers: a resting rate of 83 and a match average of 106, peaking at 164 
 
   // scatter (raw readings)
   var frag=document.createDocumentFragment();
-  dots.forEach(function(d){frag.appendChild(el('circle',{cx:sx(d[0]).toFixed(1),cy:sy(d[1]).toFixed(1),r:1.1,fill:'#d9d0bc','fill-opacity':0.42}));});
+  dots.forEach(function(d){frag.appendChild(el('circle',{cx:sx(d[0]).toFixed(1),cy:sy(d[1]).toFixed(1),r:1.1,fill:'#839788','fill-opacity':0.6}));});
   svg.appendChild(frag);
 
   // per-minute average line (single colour, lightly smoothed)
@@ -112,17 +112,17 @@ By the numbers: a resting rate of 83 and a match average of 106, peaking at 164 
 
   events.forEach(function(ev){
     var x=sx(ev.m);
-    var baseOp=ev.g?0.5:0.16, baseW=ev.g?1.9:1;
-    var attrs={x1:x,y1:py,x2:x,y2:py+ph,stroke:'#EEE0CB','stroke-opacity':baseOp,'stroke-width':baseW};
+    var baseOp=ev.g?0.7:0.32, baseW=ev.g?1.9:1;
+    var attrs={x1:x,y1:py,x2:x,y2:py+ph,stroke:'#4a5a4f','stroke-opacity':baseOp,'stroke-width':baseW};
     if(ev.dash)attrs['stroke-dasharray']='4,3';
     var vline=el('line',attrs);
     svg.appendChild(vline);
-    svg.appendChild(el('circle',{cx:x,cy:py,r:ev.g?3.2:2.2,fill:'#EEE0CB','fill-opacity':ev.g?0.85:0.5}));
+    svg.appendChild(el('circle',{cx:x,cy:py,r:ev.g?3.2:2.2,fill:'#4a5a4f','fill-opacity':ev.g?0.9:0.6}));
     var hit=el('rect',{x:x-7,y:py,width:14,height:ph,fill:'transparent',style:'cursor:pointer'});
-    hit.addEventListener('mouseenter',function(e){vline.setAttribute('stroke-opacity',ev.g?0.9:0.75);vline.setAttribute('stroke-width',ev.g?2.4:1.6);showTip(ev,e.clientX,e.clientY);});
+    hit.addEventListener('mouseenter',function(e){vline.setAttribute('stroke-opacity',ev.g?0.95:0.7);vline.setAttribute('stroke-width',ev.g?2.4:1.6);showTip(ev,e.clientX,e.clientY);});
     hit.addEventListener('mousemove',function(e){showTip(ev,e.clientX,e.clientY);});
     hit.addEventListener('mouseleave',function(){vline.setAttribute('stroke-opacity',baseOp);vline.setAttribute('stroke-width',baseW);hideTip();});
-    hit.addEventListener('touchstart',function(e){e.preventDefault();vline.setAttribute('stroke-opacity',ev.g?0.9:0.75);showTip(ev,e.touches[0].clientX,e.touches[0].clientY);},{passive:false});
+    hit.addEventListener('touchstart',function(e){e.preventDefault();vline.setAttribute('stroke-opacity',ev.g?0.95:0.7);showTip(ev,e.touches[0].clientX,e.touches[0].clientY);},{passive:false});
     svg.appendChild(hit);
   });
   document.addEventListener('touchstart',function(e){if(e.target.tagName!=='rect')hideTip();});
