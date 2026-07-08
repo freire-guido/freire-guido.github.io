@@ -10,7 +10,7 @@ description: My Fitbit auto-detected a workout during the Argentina 3-2 Egypt ga
 
 I bought a Fitbit to keep track of my sleep and the occasional run. On July 7th, a couple of minutes after Messi equalised against Egypt in the World Cup round of 16, it buzzed on my wrist and congratulated me: it had automatically detected that I was exercising. I was not exercising. I was sitting on my sofa with a plate of snacks, and my heart had just gone from resting to 164 beats a minute without me moving an inch.
 
-So I went and pulled the data. Here is the whole game, from kickoff to the final whistle. Every reading is a faint dot and the red line is the per-minute average. The vertical marks are the moments that mattered, with the goals drawn bolder. Hover over any of them to read what happened. The dimmed stretches are before kickoff, half-time, and after the final whistle, when nothing was at stake and my heart rate shows it.
+So I went and pulled the data. Here is the whole game, from kickoff to the final whistle. Every reading is a faint dot and the red line is the per-minute average. The vertical marks are the moments that mattered, with the goals drawn bolder. Hover or tap any of them to read what happened. The dimmed stretches are before kickoff, the two cooling breaks, half-time, and after the final whistle, when nothing was at stake and my heart rate shows it.
 
 <style>
 .hrz-wrap { margin: 1.6rem auto 0.5rem; max-width: 730px; }
@@ -25,12 +25,15 @@ So I went and pulled the data. Here is the whole game, from kickoff to the final
 .hrz-tip .t { font-weight: bold; color: #4a5a4f; }
 .hrz-tip .m { color: #999; margin-bottom: 3px; }
 .hrz-tip .x { color: #555; }
+@media (max-width: 600px) {
+  .hrz-tip { width: 60vw; max-width: 240px; font-size: 0.82rem; padding: 9px 11px; }
+}
 </style>
 
 <div class="hrz-wrap">
   <svg id="hrz-pulse" viewBox="0 0 720 300" role="img" aria-label="My heart rate through Argentina 3-2 Egypt, raw readings as dots with a per-minute average line, and vertical markers for every goal and key moment, goals drawn bolder"></svg>
 </div>
-<p class="hrz-cap">Each dot is one reading, roughly every couple of seconds. The line is the per-minute average. Bold marks are goals. Hover a marker to read the moment.</p>
+<p class="hrz-cap">Each dot is one reading, roughly every couple of seconds. The line is the per-minute average. Bold marks are goals. Hover or tap the chart to read each moment.</p>
 <div class="hrz-tip" id="hrz-tip"><div class="t"></div><div class="m"></div><div class="x"></div></div>
 
 By the numbers: a resting rate of 83 and a match average of 106, peaking at 164 the second Messi made it 2-2, which is nearly double resting for someone sitting completely still. Fourteen minutes spent above 120 beats a minute, almost all of them in the last twenty. And around 2,980 beats above my resting rate across the ninety minutes, which is the better part of an extra half-hour of heartbeats spent on a football match. The Fitbit was right. It was a workout.
@@ -60,71 +63,114 @@ By the numbers: a resting rate of 83 and a match average of 106, peaking at 164 
   var NS='http://www.w3.org/2000/svg';
   function el(tag,a,txt){var e=document.createElementNS(NS,tag);for(var k in a)e.setAttribute(k,a[k]);if(txt!==undefined)e.textContent=txt;return e;}
   var svg=document.getElementById('hrz-pulse');
-  var W=720,H=300,px=38,pr=50,py=16,pb=26;
-  var pw=W-px-pr, ph=H-py-pb, Y0=60, Y1=170;
-  function sx(m){return px+(m-XMIN)/(XMAX-XMIN)*pw;}
-  function sy(v){return py+ph-(v-Y0)/(Y1-Y0)*ph;}
-
-  // dim bands: before kickoff, half-time, after full time (all flat)
-  function dim(a,b){svg.appendChild(el('rect',{x:sx(a),y:py,width:sx(b)-sx(a),height:ph,fill:'#272727','fill-opacity':0.06}));}
-  dim(XMIN,preEnd); dim(half.a,half.b); dim(postStart,XMAX);
-  cool.forEach(function(c){dim(c.a,c.b);});
-  svg.appendChild(el('text',{x:(sx(half.a)+sx(half.b))/2,y:py+12,'text-anchor':'middle',fill:'#777','font-size':9,'font-style':'italic'},'half time'));
-  cool.forEach(function(c){svg.appendChild(el('text',{x:(sx(c.a)+sx(c.b))/2,y:py+12,'text-anchor':'middle',fill:'#777','font-size':8,'font-style':'italic'},'cooling break'));});
-
-  // faint y guides
-  [100,150].forEach(function(v){
-    svg.appendChild(el('line',{x1:px,y1:sy(v),x2:px+pw,y2:sy(v),stroke:'#272727','stroke-opacity':0.08,'stroke-width':1}));
-    svg.appendChild(el('text',{x:px-5,y:sy(v)+3,'text-anchor':'end',fill:'#777','font-size':9},v));
-  });
-  // x clock ticks
-  [[0,'16:00'],[30,'16:30'],[60,'17:00'],[90,'17:30'],[120,'18:00']].forEach(function(p){
-    svg.appendChild(el('text',{x:sx(p[0]),y:py+ph+15,'text-anchor':'middle',fill:'#888','font-size':9.5},p[1]));
-  });
-
-  // resting baseline
-  svg.appendChild(el('line',{x1:px,y1:sy(REST),x2:px+pw,y2:sy(REST),stroke:'#c8b89a','stroke-opacity':0.5,'stroke-width':1,'stroke-dasharray':'5,5'}));
-  svg.appendChild(el('text',{x:px+pw+5,y:sy(REST)+3,fill:'#c8b89a','font-size':9.5},'rest 83'));
-
-  // scatter (raw readings)
-  var frag=document.createDocumentFragment();
-  dots.forEach(function(d){frag.appendChild(el('circle',{cx:sx(d[0]).toFixed(1),cy:sy(d[1]).toFixed(1),r:1.1,fill:'#839788','fill-opacity':0.6}));});
-  svg.appendChild(frag);
-
-  // per-minute average line (single colour, lightly smoothed)
-  var sm=line.map(function(d,i){var s=0,n=0;for(var k=-1;k<=1;k++){var j=i+k;if(j>=0&&j<line.length){s+=line[j][1];n++;}}return [sx(d[0]),sy(s/n)];});
-  var dl='M'+sm[0][0].toFixed(1)+','+sm[0][1].toFixed(1);
-  for(var i=1;i<sm.length;i++)dl+=' L'+sm[i][0].toFixed(1)+','+sm[i][1].toFixed(1);
-  svg.appendChild(el('path',{d:dl,fill:'none',stroke:'#e0655f','stroke-width':2,'stroke-linejoin':'round','stroke-linecap':'round'}));
-
-  // event markers (goals bolder)
   var tip=document.getElementById('hrz-tip');
   var tT=tip.querySelector('.t'), tM=tip.querySelector('.m'), tX=tip.querySelector('.x');
-  function showTip(ev,x,y){
+  var Y0=60, Y1=170, view=null;
+
+  function render(){
+    var dispW=svg.getBoundingClientRect().width||700;
+    var mobile=dispW<560;
+    var fs=Math.max(1, Math.min(2.3, 720/dispW)); // keep text/strokes legible when squished
+    var W=720, H=mobile?470:300;
+    var px=30*fs, pr=44*fs, py=14*fs, pb=22*fs;
+    var pw=W-px-pr, ph=H-py-pb;
+    svg.setAttribute('viewBox','0 0 '+W+' '+H);
+    while(svg.firstChild) svg.removeChild(svg.firstChild);
+    function sx(m){return px+(m-XMIN)/(XMAX-XMIN)*pw;}
+    function sy(v){return py+ph-(v-Y0)/(Y1-Y0)*ph;}
+    function F(x){return (x*fs).toFixed(1);}
+
+    // dim bands
+    function dim(a,b){svg.appendChild(el('rect',{x:sx(a),y:py,width:sx(b)-sx(a),height:ph,fill:'#272727','fill-opacity':0.06}));}
+    dim(XMIN,preEnd); dim(half.a,half.b); dim(postStart,XMAX);
+    cool.forEach(function(c){dim(c.a,c.b);});
+    svg.appendChild(el('text',{x:(sx(half.a)+sx(half.b))/2,y:py+11*fs,'text-anchor':'middle',fill:'#777','font-size':F(9),'font-style':'italic'},'half time'));
+    if(!mobile) cool.forEach(function(c){svg.appendChild(el('text',{x:(sx(c.a)+sx(c.b))/2,y:py+11*fs,'text-anchor':'middle',fill:'#777','font-size':F(8),'font-style':'italic'},'cooling break'));});
+
+    // y guides
+    [100,150].forEach(function(v){
+      svg.appendChild(el('line',{x1:px,y1:sy(v),x2:px+pw,y2:sy(v),stroke:'#272727','stroke-opacity':0.08,'stroke-width':1}));
+      svg.appendChild(el('text',{x:px-4*fs,y:sy(v)+3*fs,'text-anchor':'end',fill:'#777','font-size':F(9)},v));
+    });
+    // x clock ticks (fewer on mobile)
+    (mobile?[[0,'16:00'],[45,'16:45'],[90,'17:30'],[135,'18:15']]:[[0,'16:00'],[30,'16:30'],[60,'17:00'],[90,'17:30'],[120,'18:00']]).forEach(function(p){
+      svg.appendChild(el('text',{x:sx(p[0]),y:py+ph+15*fs,'text-anchor':'middle',fill:'#888','font-size':F(9.5)},p[1]));
+    });
+
+    // resting baseline
+    svg.appendChild(el('line',{x1:px,y1:sy(REST),x2:px+pw,y2:sy(REST),stroke:'#b19a72','stroke-opacity':0.65,'stroke-width':1*fs,'stroke-dasharray':(5*fs)+','+(5*fs)}));
+    svg.appendChild(el('text',{x:px+pw+4*fs,y:sy(REST)+3*fs,fill:'#b19a72','font-size':F(9.5)},'rest 83'));
+
+    // scatter
+    var frag=document.createDocumentFragment();
+    dots.forEach(function(d){frag.appendChild(el('circle',{cx:sx(d[0]).toFixed(1),cy:sy(d[1]).toFixed(1),r:(1.1*fs).toFixed(2),fill:'#839788','fill-opacity':0.6}));});
+    svg.appendChild(frag);
+
+    // per-minute average line
+    var sm=line.map(function(d,i){var s=0,n=0;for(var k=-1;k<=1;k++){var j=i+k;if(j>=0&&j<line.length){s+=line[j][1];n++;}}return [sx(d[0]),sy(s/n)];});
+    var dl='M'+sm[0][0].toFixed(1)+','+sm[0][1].toFixed(1);
+    for(var i=1;i<sm.length;i++)dl+=' L'+sm[i][0].toFixed(1)+','+sm[i][1].toFixed(1);
+    svg.appendChild(el('path',{d:dl,fill:'none',stroke:'#e0655f','stroke-width':2*fs,'stroke-linejoin':'round','stroke-linecap':'round'}));
+
+    // event lines (goals bolder)
+    var lines=[];
+    events.forEach(function(ev){
+      var x=sx(ev.m);
+      var baseOp=ev.g?0.7:0.32, baseW=(ev.g?1.9:1)*fs;
+      var attrs={x1:x,y1:py,x2:x,y2:py+ph,stroke:'#4a5a4f','stroke-opacity':baseOp,'stroke-width':baseW};
+      if(ev.dash)attrs['stroke-dasharray']=(4*fs)+','+(3*fs);
+      var vline=el('line',attrs); svg.appendChild(vline);
+      svg.appendChild(el('circle',{cx:x,cy:py,r:(ev.g?3.2:2.2)*fs,fill:'#4a5a4f','fill-opacity':ev.g?0.9:0.6}));
+      lines.push({ev:ev,line:vline,baseOp:baseOp,baseW:baseW});
+    });
+
+    // interaction: tap or hover anywhere on the plot, snap to nearest event
+    var overlay=el('rect',{x:px,y:py,width:pw,height:ph,fill:'transparent'});
+    overlay.style.cursor='pointer';
+    svg.appendChild(overlay);
+    view={px:px,pw:pw,mobile:mobile,fs:fs,lines:lines};
+    overlay.addEventListener('mousemove',function(e){onMove(e.clientX,e.clientY,false);});
+    overlay.addEventListener('mouseleave',function(){clearHi();hideTip();});
+    overlay.addEventListener('touchstart',function(e){var t=e.touches[0];onMove(t.clientX,t.clientY,true);});
+    overlay.addEventListener('touchmove',function(e){var t=e.touches[0];onMove(t.clientX,t.clientY,true);});
+  }
+
+  function clearHi(){ if(view) view.lines.forEach(function(L){L.line.setAttribute('stroke-opacity',L.baseOp);L.line.setAttribute('stroke-width',L.baseW);}); }
+  function onMove(clientX,clientY,touch){
+    if(!view) return;
+    var rect=svg.getBoundingClientRect();
+    var vbx=(clientX-rect.left)/rect.width*720;
+    var m=XMIN+(vbx-view.px)/view.pw*(XMAX-XMIN);
+    var best=null,bd=1e9;
+    view.lines.forEach(function(L){var d=Math.abs(L.ev.m-m); if(d<bd){bd=d;best=L;}});
+    if(!best) return;
+    // on desktop only reveal when reasonably near a line; on mobile always snap to nearest
+    if(!touch && !view.mobile && bd>5){ clearHi(); hideTip(); return; }
+    clearHi();
+    best.line.setAttribute('stroke-opacity',best.ev.g?0.95:0.78);
+    best.line.setAttribute('stroke-width',(best.ev.g?2.6:1.8)*view.fs);
+    showTip(best.ev,clientX,clientY,touch,rect);
+  }
+  function showTip(ev,x,y,touch,rect){
     tT.textContent=ev.t; tM.textContent=ev.c; tX.textContent=ev.d;
     tip.style.display='block';
-    var tw=210,th=120,left=x+14,top=y+14;
-    if(left+tw>window.innerWidth)left=x-14-tw;
-    if(top+th>window.innerHeight)top=y-14-th;
+    var tw=tip.offsetWidth||210, th=tip.offsetHeight||120, left, top;
+    if(touch){ // anchor above the chart, centred, so a finger never covers it
+      left=rect.left+(rect.width-tw)/2;
+      top=rect.top-th-8; if(top<6) top=rect.top+6;
+    } else {
+      left=x+14; top=y+14;
+      if(left+tw>window.innerWidth) left=x-14-tw;
+      if(top+th>window.innerHeight) top=y-14-th;
+    }
+    left=Math.max(6,Math.min(left,window.innerWidth-tw-6));
+    top=Math.max(6,top);
     tip.style.left=left+'px'; tip.style.top=top+'px';
   }
   function hideTip(){tip.style.display='none';}
 
-  events.forEach(function(ev){
-    var x=sx(ev.m);
-    var baseOp=ev.g?0.7:0.32, baseW=ev.g?1.9:1;
-    var attrs={x1:x,y1:py,x2:x,y2:py+ph,stroke:'#4a5a4f','stroke-opacity':baseOp,'stroke-width':baseW};
-    if(ev.dash)attrs['stroke-dasharray']='4,3';
-    var vline=el('line',attrs);
-    svg.appendChild(vline);
-    svg.appendChild(el('circle',{cx:x,cy:py,r:ev.g?3.2:2.2,fill:'#4a5a4f','fill-opacity':ev.g?0.9:0.6}));
-    var hit=el('rect',{x:x-7,y:py,width:14,height:ph,fill:'transparent',style:'cursor:pointer'});
-    hit.addEventListener('mouseenter',function(e){vline.setAttribute('stroke-opacity',ev.g?0.95:0.7);vline.setAttribute('stroke-width',ev.g?2.4:1.6);showTip(ev,e.clientX,e.clientY);});
-    hit.addEventListener('mousemove',function(e){showTip(ev,e.clientX,e.clientY);});
-    hit.addEventListener('mouseleave',function(){vline.setAttribute('stroke-opacity',baseOp);vline.setAttribute('stroke-width',baseW);hideTip();});
-    hit.addEventListener('touchstart',function(e){e.preventDefault();vline.setAttribute('stroke-opacity',ev.g?0.95:0.7);showTip(ev,e.touches[0].clientX,e.touches[0].clientY);},{passive:false});
-    svg.appendChild(hit);
-  });
-  document.addEventListener('touchstart',function(e){if(e.target.tagName!=='rect')hideTip();});
+  render();
+  var rt; window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(render,150);});
+  document.addEventListener('touchstart',function(e){if(e.target.tagName!=='rect') hideTip();});
 })();
 </script>
