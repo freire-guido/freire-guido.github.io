@@ -12,7 +12,7 @@ I bought a Fitbit to keep track of my sleep and the occasional run. On July 7th,
 
 So I went and pulled the data. Here is the whole game, from kickoff to the final whistle. Every reading is a faint dot and the red line is the per-minute average. The vertical marks are the moments that mattered, with the goals drawn bolder. Hover or tap any of them to read what happened. The dimmed stretches are before kickoff, the two cooling breaks, half-time, and after the final whistle, when nothing was at stake and my heart rate shows it.
 
-The part I did not expect: the three biggest spikes of the whole match are the three Argentina goals, the ones under the bracket. Every time we scored my heart jumped, and Messi's equaliser took it to its peak of 164, while Egypt's two goals barely move the line. Dread, it turns out, is quieter than joy.
+The part I did not expect: the three biggest spikes of the whole match are the three Argentina goals, the comeback. Every time we scored my heart jumped, and Messi's equaliser took it to its peak of 164, while Egypt's two goals barely move the line. Dread, it turns out, is quieter than joy.
 
 <style>
 .hrz-wrap { margin: 1.6rem auto 0.5rem; max-width: 730px; }
@@ -47,8 +47,7 @@ By the numbers: a resting rate of 83 and a match average of 106, peaking at 164 
   var events=[
     {m:0,t:"Kickoff",c:"0'",d:"Comfortable on the sofa with a plate of snacks. Resting rate, about 80."},
     {m:15,t:"Egypt 1-0 (Ibrahim)",c:"15'",d:"Yasser Ibrahim heads in Attia's cross, unmarked. Egypt in front.",g:1},
-    {m:22,t:"Penalty to Argentina",c:"22'",d:"The referee points to the spot after Hassan brings Tagliafico down."},
-    {m:23,t:"Messi's penalty saved",c:"23'",d:"Messi takes it, Shobeir dives low and pushes it away."},
+    {m:23,t:"Messi's penalty saved",c:"23'",d:"Argentina win a penalty, Messi takes it, and Shobeir dives low to save it."},
     {m:28,t:"Messi hits the post",c:"28'",d:"A thirty-yard Messi free-kick clips the outside of the post."},
     {m:48,t:"Half-time",c:"HT",d:"Egypt lead 1-0 at the break."},
     {m:75,t:"Zico scores, then ruled out",c:"58'",d:"Zico turns in Hassan's ball and Egypt celebrate, but VAR finds a foul in the build-up and the goal is chalked off.",dash:1},
@@ -74,7 +73,7 @@ By the numbers: a resting rate of 83 and a match average of 106, peaking at 164 
     var mobile=dispW<560;
     var fs=Math.max(1, Math.min(2.3, 720/dispW)); // keep text/strokes legible when squished
     var W=720, H=mobile?470:300;
-    var px=30*fs, pr=44*fs, py=24*fs, pb=22*fs;
+    var px=30*fs, pr=44*fs, py=18*fs, pb=22*fs;
     var pw=W-px-pr, ph=H-py-pb;
     svg.setAttribute('viewBox','0 0 '+W+' '+H);
     while(svg.firstChild) svg.removeChild(svg.firstChild);
@@ -118,20 +117,19 @@ By the numbers: a resting rate of 83 and a match average of 106, peaking at 164 
     var lines=[];
     events.forEach(function(ev){
       var x=sx(ev.m);
-      var baseOp=ev.g?0.7:0.32, baseW=(ev.g?1.9:1)*fs;
+      var baseOp=ev.ar?0.8:(ev.g?0.62:0.34), baseW=(ev.ar?1.9:(ev.g?1.3:1))*fs;
       var attrs={x1:x,y1:py,x2:x,y2:py+ph,stroke:'#4a5a4f','stroke-opacity':baseOp,'stroke-width':baseW};
-      if(ev.dash)attrs['stroke-dasharray']=(4*fs)+','+(3*fs);
+      if(!ev.g) attrs['stroke-dasharray']=(4*fs)+','+(3*fs); // non-goals dashed, goals solid
       var vline=el('line',attrs); svg.appendChild(vline);
-      svg.appendChild(el('circle',{cx:x,cy:py,r:(ev.g?3.2:2.2)*fs,fill:'#4a5a4f','fill-opacity':ev.g?0.9:0.6}));
+      svg.appendChild(el('circle',{cx:x,cy:py,r:(ev.ar?3.4:(ev.g?2.8:2.2))*fs,fill:'#4a5a4f','fill-opacity':ev.ar?0.9:(ev.g?0.75:0.55)}));
       lines.push({ev:ev,line:vline,baseOp:baseOp,baseW:baseW});
     });
 
-    // bracket grouping Argentina's three goals: every goal, a spike
+    // label over Argentina's three goals
     var ar=events.filter(function(e){return e.ar;});
     if(ar.length>1){
-      var bx1=sx(ar[0].m), bx2=sx(ar[ar.length-1].m), yB=py-10*fs;
-      svg.appendChild(el('path',{d:'M'+bx1.toFixed(1)+','+py+' L'+bx1.toFixed(1)+','+yB.toFixed(1)+' L'+bx2.toFixed(1)+','+yB.toFixed(1)+' L'+bx2.toFixed(1)+','+py,fill:'none',stroke:'#4a5a4f','stroke-opacity':0.8,'stroke-width':1.2*fs,'stroke-linejoin':'round'}));
-      svg.appendChild(el('text',{x:((bx1+bx2)/2).toFixed(1),y:(yB-4*fs).toFixed(1),'text-anchor':'middle',fill:'#4a5a4f','font-size':F(9),'font-weight':'bold'},'3 goals, 3 spikes'));
+      var cxL=(sx(ar[0].m)+sx(ar[ar.length-1].m))/2;
+      svg.appendChild(el('text',{x:cxL.toFixed(1),y:(py-6*fs).toFixed(1),'text-anchor':'middle',fill:'#4a5a4f','font-size':F(9.5),'font-weight':'bold'},'comeback'));
     }
 
     // interaction: tap or hover anywhere on the plot, snap to nearest event
