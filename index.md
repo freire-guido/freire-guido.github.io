@@ -8,15 +8,14 @@ layout: default
 
 Hi! I am a Data Science MSc. from the University of Buenos Aires (UBA).
 
-I am currently an AI Safety Fellow at [MARS](https://caish.org/mars), part of the Cambridge Artificial Intelligence Safety Hub (CAISH). Previously, I researched at the Institute of Computing Sciences at UBA. My research is funded by the [AISAR](https://aisafety.ar) Open Philanthropy program and revolves around safer deployment methods for medical LLMs, particularly mitigating bias in high-stakes settings.
+I am currently an AI Safety Fellow at [LASR](https://lasrlabs.org). Previously, I researched at the Institute of Computing Sciences at UBA. My research was funded by the [AISAR](https://aisafety.ar) program and revolves around safer deployment methods for medical LLMs, particularly mitigating bias in high-stakes settings.
 
-In another life, I worked as a tech consultant in [ZS Associates](https://www.zs.com/solutions/life-sciences-randd-and-medical) for 2+ years.
-
-Outside of work, I moderate Wikipedia and contribute to reducing the English-Spanish language resource gap. Being a trumpet player, I enjoy jazz music.
+Outside of work, I moderate Wikipedia and contribute to reducing the English-Spanish language resource gap. Being a trumpet player, I enjoy jazz music. In another life, I worked as a tech consultant in [ZS Associates](https://www.zs.com/solutions/life-sciences-randd-and-medical) for 2+ years.
 
 # Select experience
 
-- Research Fellow, Cambridge Artificial Intelligence Safety Hub (CAISH), MARS - 2025
+- [Research Fellow](https://lasrlabs.org), LASR Labs, Arcadia Impact, 2026
+- [Research Fellow](https://caish.org/mars), Cambridge Artificial Intelligence Safety Hub (CAISH), MARS - 2025
 - [Research Fellow](https://docs.google.com/presentation/d/1S59A_vbZ1kn3fdOx-EVuf0JXwFUcc9TmnCgyxKVYk-A/edit?usp=sharing), Artificial Intelligence Safety Argentina (AISAR), Open Philanthropy - 2025
 - Honor Diploma (MSc.), University of Buenos Aires - 2024
 - Certified Bartender, Gato Dumas - 2023
