@@ -16,6 +16,7 @@ Title, Author, Format, Acquisition Date
 - *The Cathedral & The Bazaar*, Eric S. Raymond, Softcover, 2022
 - *Historia Universal de la Infamia*, Jorge Luis Borges, Softcover, 2019
 - *Understanding Analysis*, Stephen Abbott, Softcover, 2023
+- *Stoner*, John Williams, Softcover, 2026
 - *Todo lo que usted siempre quiso saber sobre Lacan y nunca se atrevió a preguntarle a Hitchcock*, Slavoj Zizek (and others), Softcover, 2017
 - *Introduction to Algorithms*, Thomas Cormen (and others), Hardcover, 2021
 - *Caudillos Federales*, Pacho O'Donell, Softcover, 2020
@@ -27,6 +28,8 @@ Title, Author, Format, Acquisition Date
 - *Borges Esencial*, Jorge Luis Borges (and others), Hardcover, 2018
 - *The Alignment Problem*, Brian Christian, Softcover, 2025
 - *Normal People*, Sally Rooney, Softcover, 2026
+- *Exciting Times*, Naoise Dolan, Softcover, 2026
 - *Kitchen Confidential*, Anthony Bourdain, Softcover, 2026
 - *Human Compatible*, Stuart Russell, Softcover, 2025
+- *Empire of AI*, Karen Hao, Softcover, 2026
 - *Hackers & Painters*, Paul Graham, Softcover, 2026 
