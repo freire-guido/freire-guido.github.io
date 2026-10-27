@@ -27,6 +27,7 @@ Outside of work, I moderate Wikipedia and contribute to reducing the English-Spa
 
 ## News
 
+- **Oct 2026**: Our [LASR project](https://knowingly-wrong.github.io/) was granted an extension!
 - **Jul 2026**: I am moving to London as a [LASR](https://lasrlabs.org) Fellow, very excited to research and meet AI safety people!
 - **May 2026**: Will be in Boston for [CAMBRIA](https://www.cbai.ai/cambria), an intensive mechanistic interpretability bootcamp.
 - **Apr 2026**: Presenting my AISAR work on AI control for health at [ICLR 2026](https://trustworthy-ai-workshop.github.io/iclr2026/). Let's meet!
