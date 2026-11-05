@@ -7,6 +7,8 @@ title: Blog
 
 Occasional notes, mostly on things that broke in interesting ways.
 
+- [12,781 Bikes](/12781-bikes) - November 2026
+
 - [Watching Argentina is a Workout](/argentina-egypt) - July 2026
 
 - [8,760 Hours](/8760-hours) - June 2026
