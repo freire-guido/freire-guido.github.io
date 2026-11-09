@@ -14,7 +14,7 @@ Outside of work, I moderate Wikipedia and contribute to reducing the English-Spa
 
 # Select experience
 
-- [Research Fellow](https://lasrlabs.org), LASR Labs, Arcadia Impact, 2026
+- [Research Fellow](https://lasrlabs.org), LASR Labs + extension, Arcadia Impact, 2026
 - [Research Fellow](https://caish.org/mars), Cambridge Artificial Intelligence Safety Hub (CAISH), MARS - 2025
 - [Research Fellow](https://docs.google.com/presentation/d/1S59A_vbZ1kn3fdOx-EVuf0JXwFUcc9TmnCgyxKVYk-A/edit?usp=sharing), Artificial Intelligence Safety Argentina (AISAR), Open Philanthropy - 2025
 - Honor Diploma (MSc.), University of Buenos Aires - 2024
@@ -27,6 +27,7 @@ Outside of work, I moderate Wikipedia and contribute to reducing the English-Spa
 
 ## News
 
+- **Nov 2026**: I'm a research manager at [AISAR](https://scholarship.aisafety.ar/).
 - **Oct 2026**: Our [LASR project](https://knowingly-wrong.github.io/) was granted an extension!
 - **Jul 2026**: I am moving to London as a [LASR](https://lasrlabs.org) Fellow, very excited to research and meet AI safety people!
 - **May 2026**: Will be in Boston for [CAMBRIA](https://www.cbai.ai/cambria), an intensive mechanistic interpretability bootcamp.
