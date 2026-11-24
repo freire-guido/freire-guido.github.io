@@ -1,6 +1,10 @@
 title: Guido Freire
+author: Guido Freire
+description: "AI Researcher"
 url: "https://freireguido.com"
 baseurl: "/"
+
+twitter_username: ifguido
 
 markdown: kramdown
 remote_theme: ankitsultana/researcher@gem
